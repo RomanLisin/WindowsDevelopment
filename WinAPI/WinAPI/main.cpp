@@ -1,8 +1,9 @@
-#include<Windows.h>
+﻿#include<Windows.h>
 #include "resource.h"
 
 //#define MESSAGE_BOX
 BOOL CALLBACK DlgProc(HWND  hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+// первый параметр дескриптор экземпляра приложения, второй не использ., третий предоставляет доступ к переменным cmd, режим отображения окна , иногда указывается в качестве второго аргумента функции ShowWindow(hwnd, iShow)
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
 
@@ -10,7 +11,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 #ifdef MESSAGE_BOX
 	MessageBox
 	(NULL,
-		"Hello WinAPI!\n��� ���� ���������",
+		"Hello WinAPI!\nЭто окно сообщения",
 		"Info", MB_YESNOCANCEL | MB_ICONINFORMATION | MB_HELP | MB_DEFBUTTON2
 		| MB_SYSTEMMODAL
 	);
@@ -32,7 +33,7 @@ BOOL CALLBACK DlgProc(HWND  hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
-		case IDOK: MessageBox(hwnd, "���� ������ ����� OK", "Info", MB_OK | MB_ICONINFORMATION); break;
+		case IDOK: MessageBox(hwnd, "Была нажата кнока OK", "Info", MB_OK | MB_ICONINFORMATION); break;
 		case IDCANCEL: EndDialog(hwnd, 0); break;
 		}
 		break;
