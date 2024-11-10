@@ -4,7 +4,7 @@
 #include<cstring>
 #include"resource.h"
 
-CONST CHAR* init_values[] = { "Привет", "This", "is", "my", "first", "Combo", "Box" };
+CONST CHAR* init_values[] = { "Привет", "This", "is", "my", "first", "ListBox"};
 
 BOOL CALLBACK DlgProc(HWND nwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK InputDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
