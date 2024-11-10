@@ -48,7 +48,10 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			// CHAR sz_newItem[256] = "";
 				HWND hListBox = GetDlgItem(hwnd, IDC_LIST1);
-			if (DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG2), hwnd, InputDlgProc, (LPARAM)hListBox)==IDOK) //sz_newItem) == IDOK)
+			if (DialogBoxParam(GetModuleHandle(NULL),  //  GetModuleHandle(Null) - передаёт HINSTANCE текущего модуля в DialogBoxParam, чтобы функция знала, где искать ресурсы для диалогового окна (в данном случае IDD_DIALOG2), определённые в resource.h
+				MAKEINTRESOURCE(IDD_DIALOG2), 
+				hwnd, InputDlgProc, 
+				(LPARAM)hListBox)==IDOK) //sz_newItem) == IDOK)
 			{
 
 				//if (sz_newItem[0] != "\0")
@@ -85,7 +88,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 BOOL CALLBACK InputDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static HWND hListBox; 
-	CHAR buffer[256] = "";
+	CHAR sz_buffer[256] = "";
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
@@ -97,12 +100,13 @@ BOOL CALLBACK InputDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 		case IDOK:
 		{
+			int count = SendMessage(hListBox, LB_GETCOUNT, 0, 0);
 			// Считываем введенный текст и сохраняем в lParam для передачи в основное окно
 			//CHAR* buffer = (CHAR*)lParam;
-			GetDlgItemText(hwnd, IDC_EDIT1, buffer, 256);
-			if (strlen(buffer) > 0)
+			GetDlgItemText(hwnd, IDC_EDIT1, sz_buffer, 256);
+			if (strlen(sz_buffer) > 0)
 			{
-				SendMessage(hListBox, LB_ADDSTRING, 0, (LPARAM)buffer);
+				SendMessage(hListBox, LB_INSERTSTRING, (WPARAM)count/*добавляем в конец списка*/, (LPARAM)sz_buffer);
 			}
 			EndDialog(hwnd, IDOK);
 			return TRUE;
