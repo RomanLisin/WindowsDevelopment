@@ -1,10 +1,10 @@
-#define _CRT_SECURE_NO_WARNINGS  // добавляем при ошибке С4996
+п»ї#define _CRT_SECURE_NO_WARNINGS  // РґРѕР±Р°РІР»СЏРµРј РїСЂРё РѕС€РёР±РєРµ РЎ4996
 #include<Windows.h>
-#include<cstdio>  // чтобы работал sprintf(...)
+#include<cstdio>  // С‡С‚РѕР±С‹ СЂР°Р±РѕС‚Р°Р» sprintf(...)
 #include<cstring>
 #include"resource.h"
 
-CONST CHAR* init_values[] = { "Привет", "This", "is", "my", "first", "Combo", "Box" };
+CONST CHAR* init_values[] = { "РџСЂРёРІРµС‚", "This", "is", "my", "first", "Combo", "Box" };
 
 BOOL CALLBACK DlgProc(HWND nwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK InputDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -21,7 +21,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_INITDIALOG:
 	{
-		HWND hList = GetDlgItem(hwnd, IDC_LIST1);    // функция GetDlgItem() возвращает HWND указанного дочерего окна
+		HWND hList = GetDlgItem(hwnd, IDC_LIST1);    // С„СѓРЅРєС†РёСЏ GetDlgItem() РІРѕР·РІСЂР°С‰Р°РµС‚ HWND СѓРєР°Р·Р°РЅРЅРѕРіРѕ РґРѕС‡РµСЂРµРіРѕ РѕРєРЅР°
 		for (int i = 0; i < sizeof(init_values) / sizeof(init_values[0]); i++)
 		{
 			SendMessage(hList, LB_ADDSTRING, 0, (LPARAM)init_values[i]);
@@ -38,9 +38,9 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CHAR sz_buffer[SIZE]{};
 			CHAR sz_message[SIZE]{};
 			INT i = SendMessage(hListBox, LB_GETCURSEL, 0, 0);
-			// Сообщение LB_GETCURSEL (Current Selection) возвращает номер выбранного пункта ListBox
+			// РЎРѕРѕР±С‰РµРЅРёРµ LB_GETCURSEL (Current Selection) РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРјРµСЂ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РїСѓРЅРєС‚Р° ListBox
 			SendMessage(hListBox, LB_GETTEXT, i, (LPARAM)sz_buffer);
-			sprintf(sz_message, "Вы выбрали пункт N%i со значением \"%s\".", i, sz_buffer);
+			sprintf(sz_message, "Р’С‹ РІС‹Р±СЂР°Р»Рё РїСѓРЅРєС‚ N%i СЃРѕ Р·РЅР°С‡РµРЅРёРµРј \"%s\".", i, sz_buffer);
 			MessageBox(hwnd, sz_message, "Selected value", MB_OK | MB_ICONINFORMATION);
 			break;
 		}
@@ -48,7 +48,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			// CHAR sz_newItem[256] = "";
 				HWND hListBox = GetDlgItem(hwnd, IDC_LIST1);
-			if (DialogBoxParam(GetModuleHandle(NULL),  //  GetModuleHandle(Null) - передаёт HINSTANCE текущего модуля в DialogBoxParam, чтобы функция знала, где искать ресурсы для диалогового окна (в данном случае IDD_DIALOG2), определённые в resource.h
+			if (DialogBoxParam(GetModuleHandle(NULL),  //  GetModuleHandle(Null) - РїРµСЂРµРґР°С‘С‚ HINSTANCE С‚РµРєСѓС‰РµРіРѕ РјРѕРґСѓР»СЏ РІ DialogBoxParam, С‡С‚РѕР±С‹ С„СѓРЅРєС†РёСЏ Р·РЅР°Р»Р°, РіРґРµ РёСЃРєР°С‚СЊ СЂРµСЃСѓСЂСЃС‹ РґР»СЏ РґРёР°Р»РѕРіРѕРІРѕРіРѕ РѕРєРЅР° (РІ РґР°РЅРЅРѕРј СЃР»СѓС‡Р°Рµ IDD_DIALOG2), РѕРїСЂРµРґРµР»С‘РЅРЅС‹Рµ РІ resource.h
 				MAKEINTRESOURCE(IDD_DIALOG2), 
 				hwnd, InputDlgProc, 
 				(LPARAM)hListBox)==IDOK) //sz_newItem) == IDOK)
@@ -72,7 +72,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 			else
 			{
-				MessageBox(hwnd, "Выберите элемент для удаления", "Ошибка", MB_OK | MB_ICONERROR);
+				MessageBox(hwnd, "Р’С‹Р±РµСЂРёС‚Рµ СЌР»РµРјРµРЅС‚ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ", "РћС€РёР±РєР°", MB_OK | MB_ICONERROR);
 			}
 			break;
 		}
@@ -101,12 +101,12 @@ BOOL CALLBACK InputDlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		case IDOK:
 		{
 			int count = SendMessage(hListBox, LB_GETCOUNT, 0, 0);
-			// Считываем введенный текст и сохраняем в lParam для передачи в основное окно
+			// РЎС‡РёС‚С‹РІР°РµРј РІРІРµРґРµРЅРЅС‹Р№ С‚РµРєСЃС‚ Рё СЃРѕС…СЂР°РЅСЏРµРј РІ lParam РґР»СЏ РїРµСЂРµРґР°С‡Рё РІ РѕСЃРЅРѕРІРЅРѕРµ РѕРєРЅРѕ
 			//CHAR* buffer = (CHAR*)lParam;
 			GetDlgItemText(hwnd, IDC_EDIT1, sz_buffer, 256);
 			if (strlen(sz_buffer) > 0)
 			{
-				SendMessage(hListBox, LB_INSERTSTRING, (WPARAM)count/*добавляем в конец списка*/, (LPARAM)sz_buffer);
+				SendMessage(hListBox, LB_INSERTSTRING, (WPARAM)count/*РґРѕР±Р°РІР»СЏРµРј РІ РєРѕРЅРµС† СЃРїРёСЃРєР°*/, (LPARAM)sz_buffer);
 			}
 			EndDialog(hwnd, IDOK);
 			return TRUE;
