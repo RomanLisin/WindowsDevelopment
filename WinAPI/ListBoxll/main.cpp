@@ -45,7 +45,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			HWND hButtonAdd = GetDlgItem(hwnd, IDC_BUTTON_ADD);
 			SetFocus(hButtonAdd);
 			SendMessage(hwnd, DM_SETDEFID, IDC_BUTTON_ADD, 0); // сразу устанавливаем 'добавить' по умолчанию
-			//SetFocus(hListBox);
+			SetFocus(hListBox);
 		}
 		//break;
 		case WM_COMMAND:
@@ -92,7 +92,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					EndDialog(hwnd, 0);
 					break;
 			}
-		case WM_SYSKEYDOWN:
+		case WM_VKEYTOITEM:
 		{
 				if (HIWORD(wParam) == VK_RETURN)
 				{
