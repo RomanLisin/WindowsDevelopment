@@ -3,6 +3,7 @@
 #include"resource.h"
 #include<cstdio>
 
+
 CONST CHAR* g_VALUES[] = { "This","is","my", "first","List","Box" };
 
 BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -32,17 +33,54 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
 			SendMessage(hwnd, WM_SETICON, 0, (LPARAM)hIcon );
-
 			HWND hListBox = GetDlgItem(hwnd, IDC_LIST);
+
 			for (int i = 0; i < sizeof(g_VALUES) / sizeof(g_VALUES[0]); i++)
 			{
 				SendMessage(hListBox, LB_ADDSTRING, 0, (LPARAM)g_VALUES[i] );
 			}	
+			HWND hButtonAdd = GetDlgItem(hwnd, IDC_BUTTON_ADD);
+			SetFocus(hButtonAdd); 
+			SendMessage(hwnd, DM_SETDEFID, IDC_BUTTON_ADD, 0); // сразу устанавливаем 'добавить' по умолчанию
+			SetFocus(hListBox);
 		}
-			break;
+		break;
+		//case WM_KEYDOWN:
+		//{
+		//	HWND hCurrentFocus = GetFocus();
+		//	if (hCurrentFocus == GetDlgItem(hwnd, IDC_LIST))
+		//	{
+		//		switch (LOWORD(wParam))
+		//		{
+		//			//case VK_RETURN:
+		//				//break;
+		//		case VK_DELETE:
+		//		{
+		//			HWND hListBox = GetDlgItem(hwnd, IDC_LIST);
+		//			INT i = SendMessage(hListBox, LB_GETCURSEL, 0, 0);
+		//			SendMessage(hListBox, LB_DELETESTRING, i, 0);
+		//			return DLGC_WANTALLKEYS;
+		//		}
+		//		/*		MessageBox(hwnd, "Delete pressed!", "Debug", MB_OK);
+		//				return DLGC_WANTALLKEYS;*/
+		//		}
+		//		break;
+		//	}
+		//}
+		
 		case WM_COMMAND:
+			
 			switch (LOWORD(wParam))
 			{
+//**/**/**/**/  з.3) реализовать кнопку удалить
+			case IDC_BUTTON_REMOVE:
+			{
+				HWND hListBox = GetDlgItem(hwnd, IDC_LIST);
+				INT i = SendMessage(hListBox, LB_GETCURSEL, 0, 0);
+				SendMessage(hListBox, LB_DELETESTRING, i, 0);
+			} // DONE
+			break;
+
 			case IDC_BUTTON_ADD:
 				DialogBoxParam(GetModuleHandle(NULL) /*получаем hinstance*/
 					, MAKEINTRESOURCE(IDD_DIALOG_ADD_ITEM), hwnd, DlgProcAddItem, 0);
@@ -61,11 +99,32 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			}
 			//break;  // если с ним, то выскакивающее окно сообщение повторяется, если без , то после добавления окошко сразу закрывается
 			case IDCANCEL: EndDialog(hwnd, 0); break;
+				break;
+			case WM_CLOSE:
+				EndDialog(hwnd, 0);
+				break;
+			}
+		default:
+			switch (HIWORD(wParam))
+			{
+			case WM_GETDLGCODE:
+
+			case LBN_DBLCLK:
+				HWND hListBox = GetDlgItem(hwnd, IDC_LIST);
+				INT i = SendMessage(hListBox, LB_GETCURSEL, 0, 0);
+				if (i != LB_ERR) 
+				{
+					CONST INT SIZE = 256;
+					CHAR sz_buffer[SIZE]{};
+					SendMessage(hListBox, LB_GETTEXT, i, (LPARAM)sz_buffer);
+
+					CHAR sz_message[SIZE]{};
+					sprintf(sz_message, "Вы выбрали элемент: \"%s\".", sz_buffer);
+					MessageBox(hwnd, sz_message, "Double Click", MB_OK | MB_ICONINFORMATION);
+				}
 			}
 			break;
-		case WM_CLOSE:
-			EndDialog(hwnd, 0);
-			break;
+				
 	}
 	return FALSE;
 }
@@ -74,6 +133,12 @@ BOOL CALLBACK DlgProcAddItem(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
+
+//**/**/**/**/  з.2) При открытии окна 'Добавить вхожение' фокус должен быть на текстовом поле;
+	{
+		HWND hListBox = GetDlgItem(hwnd, IDC_EDIT_ADD_ITEM);
+		SetFocus(hListBox);
+	}  // DONE
 
 		break;
 	case WM_COMMAND:
@@ -92,6 +157,10 @@ BOOL CALLBACK DlgProcAddItem(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 			// 3) Получаем дескриптор ListBox:
 			HWND hListBox = GetDlgItem(hParent, IDC_LIST);
+
+			INT index = SendMessage(hListBox, LB_FINDSTRING, -1, (LPARAM)sz_buffer);
+//**/**/**/**/ з.1) Запретить возможность добавления одинаковых значений
+			if (index==LB_ERR)
 
 			// 4) Добавляем текст в ListBox:
 			SendMessage(hListBox, LB_ADDSTRING, 0, (LPARAM)sz_buffer);
