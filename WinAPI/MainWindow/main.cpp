@@ -1,7 +1,9 @@
 //MainWindow
 #include<Windows.h>
+#include"resource.h"
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "My Main Window";
+HCURSOR hCursor = NULL;
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -26,6 +28,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	wClass.lpszMenuName = NULL;
 	wClass.lpszClassName = g_sz_WINDOW_CLASS;
 	wClass.lpfnWndProc = (WNDPROC) WndProc;
+	wClass.style = CS_VREDRAW | CS_HREDRAW;
 
 	if (!RegisterClassEx(&wClass))
 	{
@@ -73,12 +76,39 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	switch (uMsg)
 	{
 	case WM_CREATE:
+	{
+		HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
+		SendMessage(hwnd, WM_SETICON, 0, (LPARAM)hIcon);
+
+		hCursor = LoadCursorFromFile("ANI\\3work.ani");
+		if (!hCursor)
+		{
+			MessageBox(hwnd, "Не удалось загрузить курсор", "Ошибка", MB_ICONERROR);
+		}
+		//процентнопрозрачное окно
+		//SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+		// Make this window 95% alpha
+		//int alfaChanel = 95;
+		//SetLayeredWindowAttributes(hwnd, 0, (255 * alfaChanel) / 100, LWA_ALPHA);
 		break;
+	}
 	case WM_COMMAND:
 		break;
+	case WM_SETCURSOR:
+	{
+		SetCursor(hCursor);
+		return TRUE;
+	}
+		break;
 	case WM_DESTROY:
+	{
+		if (hCursor)
+		{
+			DestroyCursor(hCursor);
+		}
 		PostQuitMessage(0);
 		break;
+	}
 	case WM_CLOSE:
 		DestroyWindow(hwnd);
 		break;
