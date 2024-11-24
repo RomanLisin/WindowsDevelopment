@@ -1,4 +1,4 @@
-//MainWindow
+п»ї//MainWindow
 #include<Windows.h>
 #include<cstdio>
 #include"resource.h"
@@ -13,7 +13,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
 	//DialogBoxParam(hInstance, MAKEINTRESOURCE(IDD_DIALOG1), NULL, DlgProc, 0);
-	//1)Регистрация класса окна
+	//1)Р РµРіРёСЃС‚СЂР°С†РёСЏ РєР»Р°СЃСЃР° РѕРєРЅР°
 	WNDCLASSEX wClass;
 	ZeroMemory(&wClass, sizeof(wClass));
 
@@ -38,19 +38,19 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		MessageBox(NULL, "Class registration failed","", MB_OK | MB_ICONERROR);
 		return 0;
 	}
-	 //2)Создание окна
+	 //2)РЎРѕР·РґР°РЅРёРµ РѕРєРЅР°
 	HWND hwnd = CreateWindowEx
 	(
 		NULL,    // Ex-Style
 		g_sz_WINDOW_CLASS, // Class name
 		g_sz_WINDOW_CLASS, // Window title
-		WS_OVERLAPPEDWINDOW, // Window stile. такой стиль всегда задаётся для главного окна
-		CW_USEDEFAULT, CW_USEDEFAULT,   // Position - положение окна при запуске
-		CW_USEDEFAULT, CW_USEDEFAULT,   // Size - размер создаваемого окна
-		NULL,  // Родительского окна нет
-		NULL,  //  hMenu  - для главного окна это ResorceID главного меню, для дочернего окна (элемента какого-то окна) 
-		//  это ResourceID соответствующего элемента. По этому ResourceID нужный элемент всегда можно получить
-		//    при помощи функции GetDlgItem, если не NULL не сработает
+		WS_OVERLAPPEDWINDOW, // Window stile. С‚Р°РєРѕР№ СЃС‚РёР»СЊ РІСЃРµРіРґР° Р·Р°РґР°С‘С‚СЃСЏ РґР»СЏ РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР°
+		CW_USEDEFAULT, CW_USEDEFAULT,   // Position - РїРѕР»РѕР¶РµРЅРёРµ РѕРєРЅР° РїСЂРё Р·Р°РїСѓСЃРєРµ
+		CW_USEDEFAULT, CW_USEDEFAULT,   // Size - СЂР°Р·РјРµСЂ СЃРѕР·РґР°РІР°РµРјРѕРіРѕ РѕРєРЅР°
+		NULL,  // Р РѕРґРёС‚РµР»СЊСЃРєРѕРіРѕ РѕРєРЅР° РЅРµС‚
+		NULL,  //  hMenu  - РґР»СЏ РіР»Р°РІРЅРѕРіРѕ РѕРєРЅР° СЌС‚Рѕ ResorceID РіР»Р°РІРЅРѕРіРѕ РјРµРЅСЋ, РґР»СЏ РґРѕС‡РµСЂРЅРµРіРѕ РѕРєРЅР° (СЌР»РµРјРµРЅС‚Р° РєР°РєРѕРіРѕ-С‚Рѕ РѕРєРЅР°) 
+		//  СЌС‚Рѕ ResourceID СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ СЌР»РµРјРµРЅС‚Р°. РџРѕ СЌС‚РѕРјСѓ ResourceID РЅСѓР¶РЅС‹Р№ СЌР»РµРјРµРЅС‚ РІСЃРµРіРґР° РјРѕР¶РЅРѕ РїРѕР»СѓС‡РёС‚СЊ
+		//    РїСЂРё РїРѕРјРѕС‰Рё С„СѓРЅРєС†РёРё GetDlgItem, РµСЃР»Рё РЅРµ NULL РЅРµ СЃСЂР°Р±РѕС‚Р°РµС‚
 		hInstance,
 		NULL
 
@@ -60,10 +60,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		MessageBox(NULL, "Window creation failed", "", MB_OK | MB_ICONERROR);
 		return 0;
 	}
-	ShowWindow(hwnd, nCmdShow); // Задает режим отображения окна(Развернуто на весь экран, Свернуто в окно, Свернуто на панель задач .....)
-	UpdateWindow(hwnd);  // Прорисовывает окно.
+	ShowWindow(hwnd, nCmdShow); // Р—Р°РґР°РµС‚ СЂРµР¶РёРј РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РѕРєРЅР°(Р Р°Р·РІРµСЂРЅСѓС‚Рѕ РЅР° РІРµСЃСЊ СЌРєСЂР°РЅ, РЎРІРµСЂРЅСѓС‚Рѕ РІ РѕРєРЅРѕ, РЎРІРµСЂРЅСѓС‚Рѕ РЅР° РїР°РЅРµР»СЊ Р·Р°РґР°С‡ .....)
+	UpdateWindow(hwnd);  // РџСЂРѕСЂРёСЃРѕРІС‹РІР°РµС‚ РѕРєРЅРѕ.
 
-	//3)Запуск цикла сообщений.
+	//3)Р—Р°РїСѓСЃРє С†РёРєР»Р° СЃРѕРѕР±С‰РµРЅРёР№.
 
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
@@ -86,9 +86,9 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		hCursor = LoadCursorFromFile("ANI\\3work.ani");
 		if (!hCursor)
 		{
-			MessageBox(hwnd, "Не удалось загрузить курсор", "Ошибка", MB_ICONERROR);
+			MessageBox(hwnd, "РќРµ СѓРґР°Р»РѕСЃСЊ Р·Р°РіСЂСѓР·РёС‚СЊ РєСѓСЂСЃРѕСЂ", "РћС€РёР±РєР°", MB_ICONERROR);
 		}
-		//процентнопрозрачное окно
+		//РїСЂРѕС†РµРЅС‚РЅРѕРїСЂРѕР·СЂР°С‡РЅРѕРµ РѕРєРЅРѕ
 		SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
 		// Make this window 95% alpha
 		int alfaChanel = 95;
@@ -97,14 +97,15 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-		int SizeWndFromScreen = 75;
-		width = screenWidth * SizeWndFromScreen / 100;
-		height = screenHeight * SizeWndFromScreen / 100;
+		int sizeWndFromScreen = 75;
+		width = screenWidth * sizeWndFromScreen / 100;
+		height = screenHeight * sizeWndFromScreen / 100;
 		int xPos = (screenWidth - width) / 2;
 		int yPos = (screenHeight - height) / 2;
 		SetWindowPos(hwnd, NULL, xPos, yPos, width, height, SWP_NOZORDER);
-		break;
+		//break;
 	}
+	return 0;
 	case WM_COMMAND:
 		break;
 	case WM_SIZE:
@@ -113,25 +114,27 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		height = HIWORD(lParam);
 		snprintf(sz_buff, sizeof(sz_buff), " X %d x Y %d : W %d x H %d", x, y, width, height);
 		SetWindowText(hwnd, sz_buff);
-		break;
+		//break;
 	}
+	return 0;
 	case WM_MOVE:
 	{
 		x = LOWORD(lParam);
 		y = HIWORD(lParam);
 		snprintf(sz_buff, sizeof(sz_buff), " X %d x Y %d : W %d x H %d", x, y, width, height);
 		SetWindowText(hwnd, sz_buff);
-		break;
+		//break;
 	}
+	return 0;
 	case WM_SETCURSOR:
 	{
 		SetCursor(hCursor);
 		return TRUE;
 	}
-		break;
+		//break;
 	case WM_LBUTTONDOWN:
 	{
-		//перетаскивание окна
+		//РїРµСЂРµС‚Р°СЃРєРёРІР°РЅРёРµ РѕРєРЅР°
 		PostMessage(hwnd, WM_SYSCOMMAND, SC_MOVE | HTCAPTION, 0);
 		break;
 	}
