@@ -137,6 +137,8 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="ICO\Icojoy-Enjoyment-Leisure (1).ico" />
+    <Image Include="ICO\palm16x16.ico" />
+    <Image Include="ICO\palm32x32.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ANI\3work.ani" />

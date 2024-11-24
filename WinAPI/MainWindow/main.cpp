@@ -7,6 +7,7 @@ CONST CHAR g_sz_WINDOW_CLASS[] = "My Main Window";
 CHAR sz_buff[256] = {};
 HCURSOR hCursor = NULL;
 int width{}, height{}, x{}, y{};
+int pixel = 7;
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -111,6 +112,25 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return 0;
 	case WM_COMMAND:
 		break;
+	case WM_PAINT:
+	{
+		//PAINTSTRUCT ps;
+		//HDC hdc = BeginPaint(hwnd, &ps);
+
+		//// получение размеров клиенсткой области
+		//RECT rect;
+		//GetClientRect(hwnd, &rect);
+
+		////  уменьшение справа и снизу на n пиксерелей
+		//rect.right -= pixel;
+		//rect.bottom -= pixel;
+
+		//// отрисовка прямоугольника
+		//FillRect(hdc, &rect, (HBRUSH)(COLOR_WINDOW + 1));
+
+		//EndPaint(hwnd, &ps);
+	}
+		break;
 	case WM_SIZE:
 	{
 		// размер в заголовке
@@ -118,6 +138,8 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		height = HIWORD(lParam);
 		snprintf(sz_buff, sizeof(sz_buff), " X %d x Y %d : W %d x H %d", x, y, width, height);
 		SetWindowText(hwnd, sz_buff);
+
+		InvalidateRect(hwnd, NULL, TRUE); // запрашивает перерисовку
 		//break;
 	}
 	return 0;
@@ -133,8 +155,29 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return 0;
 	case WM_SETCURSOR:
 	{
-		SetCursor(hCursor);
-		return TRUE;
+		// получаем координаты курсора в клиентской области
+		POINT pt;
+		GetCursorPos(&pt);
+		ScreenToClient(hwnd, &pt);
+
+		// получаем клиентский прямоугольник
+		RECT rect;
+		GetClientRect(hwnd, &rect);
+		rect.right -= pixel;
+		rect.bottom -= pixel;
+
+		// устанавливаем курсор в зависимости от позиции
+		if (PtInRect(&rect, pt))
+		{
+			SetCursor(hCursor);
+		}
+		else
+		{
+			SetCursor(LoadCursor(NULL, IDC_ARROW));
+		}
+		return TRUE; // указываем, что мы обработали сообщение
+		/*SetCursor(hCursor);
+		return TRUE;*/
 	}
 		//break;
 	case WM_LBUTTONDOWN:
@@ -143,6 +186,34 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		PostMessage(hwnd, WM_SYSCOMMAND, SC_MOVE | HTCAPTION, 0);
 		break;
 	}
+	//case WM_MOUSEMOVE:
+	//{
+	//	// получаем текущие координаты курсора
+	//	POINT pt;
+	//	pt.x = LOWORD(lParam);
+	//	pt.y = HIWORD(lParam);
+
+	//	// получаем клиентский прямоугольник окна
+	//	RECT rect;
+	//	GetClientRect(hwnd, &rect);
+
+	//	// уменьшаем его размер справа и снизу на n пикселей
+	//	rect.right -= pixel;
+	//	rect.bottom -= pixel;
+
+	//	// проверяем, находится ли курсор внутри уменьшенного прямоугольника
+	//	if (PtInRect(&rect, pt))
+	//	{
+	//		// если курсор внутри, устанавливаем анимированный курсор
+	//		SetCursor(hCursor);
+	//	}
+	//	else
+	//	{
+	//		// если курсор вне, устанавливаем стандартный курсор
+	//		SetCursor(LoadCursor(NULL, IDC_ARROW));
+	//	}
+	//}
+	//return 0;
 	case WM_DESTROY:
 	{
 		if (hCursor)

@@ -33,6 +33,12 @@
     <Image Include="ICO\Icojoy-Enjoyment-Leisure (1).ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="ICO\palm32x32.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="ICO\palm16x16.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="ANI\3work.ani" />
