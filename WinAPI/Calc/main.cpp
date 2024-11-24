@@ -1,4 +1,4 @@
-#include<Windows.h>
+ï»¿#include<Windows.h>
 
 #define IDC_EDIT_DISPLAY 999
 #define IDC_BUTTON_0	1000
@@ -29,21 +29,21 @@ CONST INT g_i_SCREEN_WIDTH = 400;
 CONST INT g_i_SCREEN_HEIGHT = 22;
 
 
-CONST INT g_i_BUTTON_SIZE = 50; // ðàçìåð êíîïêè â ïèêñåëàõ
-ÑONST INT g_i_INTERVAL = 5;		// ðàññòîÿíèå ìåæäó êíîïêàìè
+CONST INT g_i_BUTTON_SIZE = 50; // Ñ€Ð°Ð·Ð¼ÐµÑ€ ÐºÐ½Ð¾Ð¿ÐºÐ¸ Ð² Ð¿Ð¸ÐºÑÐµÐ»Ð°Ñ…
+CONST INT g_i_INTERVAL = 5;		// Ñ€Ð°ÑÑÑ‚Ð¾ÑÐ½Ð¸Ðµ Ð¼ÐµÐ¶Ð´Ñƒ ÐºÐ½Ð¾Ð¿ÐºÐ°Ð¼Ð¸
 
-ÑONST INT g_i_START_X = 10;		
-ÑONST INT g_i_START_Y = 10;		
-ÑONST INT g_i_BUTTON_START_X = g_i_START_X;		
-ÑONST INT g_i_BUTTON_START_Y = g_i_START_X + g_i_SCREEN_HEIGHT + g_i_INTERVAL;		
+CONST INT g_i_START_X = 10;		
+CONST INT g_i_START_Y = 10;		
+CONST INT g_i_BUTTON_START_X = g_i_START_X;		
+CONST INT g_i_BUTTON_START_Y = g_i_START_X + g_i_SCREEN_HEIGHT + g_i_INTERVAL;		
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
-	//1) Ðåãèñòðàöèÿ êëàññà îêíà
+	//1) Ð ÐµÐ³Ð¸ÑÑ‚Ñ€Ð°Ñ†Ð¸Ñ ÐºÐ»Ð°ÑÑÐ° Ð¾ÐºÐ½Ð°
 	WNDCLASSEX wClass;
-	ZeroMemory(&wClass, sizeof(wClass));  // Çàíóëÿåì
+	ZeroMemory(&wClass, sizeof(wClass));  // Ð—Ð°Ð½ÑƒÐ»ÑÐµÐ¼
 	wClass.style = 0;     
 	wClass.cbSize = sizeof(wClass);
 	wClass.cbClsExtra = 0;
@@ -64,7 +64,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		MessageBox(NULL, "Class registration failed", NULL, MB_OK | MB_ICONERROR);
 		return 0;
 	}
-	//2) Ñîçäàíèå îêíà
+	//2) Ð¡Ð¾Ð·Ð´Ð°Ð½Ð¸Ðµ Ð¾ÐºÐ½Ð°
 	
 	HWND hwnd = CreateWindowEx
 	(
@@ -82,7 +82,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	);
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
-	//3) Çàïóñê öèêëà ñîîáùåíèå:
+	//3) Ð—Ð°Ð¿ÑƒÑÐº Ñ†Ð¸ÐºÐ»Ð° ÑÐ¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ:
 	
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
