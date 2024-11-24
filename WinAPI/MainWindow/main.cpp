@@ -83,6 +83,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HICON hIcon = LoadIcon(GetModuleHandle(NULL), MAKEINTRESOURCE(IDI_ICON1));
 		SendMessage(hwnd, WM_SETICON, 0, (LPARAM)hIcon);
 
+		//мульткурсор
 		hCursor = LoadCursorFromFile("ANI\\3work.ani");
 		if (!hCursor)
 		{
@@ -94,9 +95,11 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		int alfaChanel = 95;
 		SetLayeredWindowAttributes(hwnd, 0, (255 * alfaChanel) / 100, LWA_ALPHA);
 
+		//разрешение экрана
 		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
 		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
+		//размещение и размер в процентах относительно экрана
 		int sizeWndFromScreen = 75;
 		width = screenWidth * sizeWndFromScreen / 100;
 		height = screenHeight * sizeWndFromScreen / 100;
@@ -110,6 +113,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		break;
 	case WM_SIZE:
 	{
+		// размер в заголовке
 		width = LOWORD(lParam);
 		height = HIWORD(lParam);
 		snprintf(sz_buff, sizeof(sz_buff), " X %d x Y %d : W %d x H %d", x, y, width, height);
@@ -119,6 +123,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return 0;
 	case WM_MOVE:
 	{
+		// размещение в заголовке
 		x = LOWORD(lParam);
 		y = HIWORD(lParam);
 		snprintf(sz_buff, sizeof(sz_buff), " X %d x Y %d : W %d x H %d", x, y, width, height);
@@ -134,7 +139,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//break;
 	case WM_LBUTTONDOWN:
 	{
-		//перетаскивание окна
+		//перетаскивание окна 
 		PostMessage(hwnd, WM_SYSCOMMAND, SC_MOVE | HTCAPTION, 0);
 		break;
 	}
