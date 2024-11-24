@@ -1,9 +1,12 @@
 //MainWindow
 #include<Windows.h>
+#include<cstdio>
 #include"resource.h"
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "My Main Window";
+CHAR sz_buff[256] = {};
 HCURSOR hCursor = NULL;
+int width{}, height{}, x{}, y{};
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -86,20 +89,52 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			MessageBox(hwnd, "Не удалось загрузить курсор", "Ошибка", MB_ICONERROR);
 		}
 		//процентнопрозрачное окно
-		//SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
+		SetWindowLong(hwnd, GWL_EXSTYLE, GetWindowLong(hwnd, GWL_EXSTYLE) | WS_EX_LAYERED);
 		// Make this window 95% alpha
-		//int alfaChanel = 95;
-		//SetLayeredWindowAttributes(hwnd, 0, (255 * alfaChanel) / 100, LWA_ALPHA);
+		int alfaChanel = 95;
+		SetLayeredWindowAttributes(hwnd, 0, (255 * alfaChanel) / 100, LWA_ALPHA);
+
+		int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+		int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+
+		int SizeWndFromScreen = 75;
+		width = screenWidth * SizeWndFromScreen / 100;
+		height = screenHeight * SizeWndFromScreen / 100;
+		int xPos = (screenWidth - width) / 2;
+		int yPos = (screenHeight - height) / 2;
+		SetWindowPos(hwnd, NULL, xPos, yPos, width, height, SWP_NOZORDER);
 		break;
 	}
 	case WM_COMMAND:
 		break;
+	case WM_SIZE:
+	{
+		width = LOWORD(lParam);
+		height = HIWORD(lParam);
+		snprintf(sz_buff, sizeof(sz_buff), " X %d x Y %d : W %d x H %d", x, y, width, height);
+		SetWindowText(hwnd, sz_buff);
+		break;
+	}
+	case WM_MOVE:
+	{
+		x = LOWORD(lParam);
+		y = HIWORD(lParam);
+		snprintf(sz_buff, sizeof(sz_buff), " X %d x Y %d : W %d x H %d", x, y, width, height);
+		SetWindowText(hwnd, sz_buff);
+		break;
+	}
 	case WM_SETCURSOR:
 	{
 		SetCursor(hCursor);
 		return TRUE;
 	}
 		break;
+	case WM_LBUTTONDOWN:
+	{
+		//перетаскивание окна
+		PostMessage(hwnd, WM_SYSCOMMAND, SC_MOVE | HTCAPTION, 0);
+		break;
+	}
 	case WM_DESTROY:
 	{
 		if (hCursor)
