@@ -41,7 +41,7 @@ CONST INT g_i_BUTTON_START_Y = g_i_START_X + g_i_SCREEN_HEIGHT + g_i_INTERVAL;
 
 HWND g_hButtons[18]; // Массив для кнопок 0-9 и other
 HWND hEdit; //   edit control
-
+void DrawRoundedButton(HDC hdc, RECT rect, INT radius, CONST CHAR* text);
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
@@ -144,7 +144,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				g_hButtons[i] = CreateWindowEx
 				(
 					0, "Button", bLabels[i],
-					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, // | BS_OWNERDRAW,
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | BS_OWNERDRAW,  
 					x, y,
 					g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
 					hwnd,
@@ -203,6 +203,25 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 		break;
+	case WM_DRAWITEM:
+	{
+		LPDRAWITEMSTRUCT pDIS = (LPDRAWITEMSTRUCT)lParam;
+		for (INT i = 0; i < 18; ++i)
+		{
+			if (pDIS->CtlID == (IDC_BUTTON_0 + i))
+			{ // ID кнопки
+				HDC hdc = pDIS->hDC;
+				RECT rect = pDIS->rcItem;
+
+				// Рисуем закругленную кнопку
+				CHAR bText[256];
+				GetWindowText((HWND)pDIS->hwndItem, bText, sizeof(bText));
+				DrawRoundedButton(hdc, rect, 20, bText);
+				return TRUE;
+			}
+		}
+	}
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
@@ -212,4 +231,26 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	default: return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 	return FALSE;
+}
+void DrawRoundedButton(HDC hdc, RECT rect, INT radius, CONST CHAR* text)
+{
+	HBRUSH hBrush = CreateSolidBrush(RGB(36, 162, 215)); // цвет фона кнопки rgb(97,147,35) green
+	HPEN hPen = CreatePen(PS_SOLID, 1, RGB(50, 100, 200)); // цвет границы
+
+	HGDIOBJ oldBrush = SelectObject(hdc, hBrush);
+	HGDIOBJ oldPen = SelectObject(hdc, hPen);
+
+	// рисуем закругленный прямоугольник
+	RoundRect(hdc, rect.left, rect.top, rect.right, rect.bottom, radius, radius);
+
+	// устанавливаем цвет текста и выводим текст кнопки
+	SetTextColor(hdc, RGB(255, 255, 255));
+	SetBkMode(hdc, TRANSPARENT);
+	DrawText(hdc, text, -1, &rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+	// возвращаем старые ресурсы
+	SelectObject(hdc, oldBrush);
+	SelectObject(hdc, oldPen);
+	DeleteObject(hBrush);
+	DeleteObject(hPen);
 }
