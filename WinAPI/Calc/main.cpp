@@ -154,7 +154,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				);
 		}
 	}
-	break;
+		break;
 	case WM_COMMAND:
 		if (HIWORD(wParam) == BN_CLICKED)
 		{
@@ -163,6 +163,13 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			sprintf(sz_buff, "Нажата кнопка %d", b_ID);
 			MessageBox(hwnd, sz_buff, "Info", MB_OK);
 		}
+		break;
+	case WM_GETMINMAXINFO:
+	{
+		MINMAXINFO* nmi = (MINMAXINFO*)lParam;
+		nmi->ptMinTrackSize.x = g_i_START_X * 3 + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 4;
+		nmi->ptMinTrackSize.y = 355;
+	}
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
