@@ -25,19 +25,29 @@
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc_VPD_311";
 
-CONST INT g_i_SCREEN_WIDTH = 400;
-CONST INT g_i_SCREEN_HEIGHT = 22;
 
 
 CONST INT g_i_BUTTON_SIZE = 50; // размер кнопки в пикселах
 CONST INT g_i_INTERVAL = 5;		// расстояние между кнопками
+CONST INT g_i_BUTTON_DOUBLE_SIZE = g_i_BUTTON_SIZE*2+ g_i_INTERVAL; // размер кнопки в пикселах
+
+CONST INT g_i_SCREEN_WIDTH = g_i_BUTTON_SIZE*5 + g_i_INTERVAL*4;
+CONST INT g_i_SCREEN_HEIGHT = 22;
 
 CONST INT g_i_START_X = 10;
 CONST INT g_i_START_Y = 10;
 CONST INT g_i_BUTTON_START_X = g_i_START_X;
 CONST INT g_i_BUTTON_START_Y = g_i_START_X + g_i_SCREEN_HEIGHT + g_i_INTERVAL;
+#define BUTTON_SHIFT_X(column) g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL)*(column)
+#define BUTTON_SHIFT_Y(row) g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL)*(row)
+
+CONST INT g_i_WINDOW_WIDTH = g_i_SCREEN_WIDTH + g_i_START_X * 2;
+CONST INT g_i_WINDOW_HEIGHT = g_i_START_X + g_i_SCREEN_HEIGHT + g_i_BUTTON_SIZE*4 + g_i_INTERVAL*5;
+
+CONST CHAR* g_OPERATION[] = { "+" ,"-", "*","/" };
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+//INT GetTitleBarHeight(HWND hwnd);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -71,9 +81,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		NULL,
 		g_sz_WINDOW_CLASS,
 		g_sz_WINDOW_CLASS,
-		WS_OVERLAPPEDWINDOW,
+		WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		CW_USEDEFAULT, CW_USEDEFAULT,
+		g_i_WINDOW_WIDTH+16, g_i_WINDOW_HEIGHT +42,
 		NULL,
 		NULL,
 		hInstance,
@@ -105,12 +115,108 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL, "Edit", "0",
 			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT,
 			10, 10,
-			400, 22,
+			g_i_SCREEN_WIDTH, g_i_SCREEN_HEIGHT,
 			hwnd,
-			(HMENU)1000,
+			(HMENU)999,
 			GetModuleHandle(NULL),
 			NULL
 		);
+		CHAR sz_digit[2] = {};
+		for (int i = 6; i >= 0; i -= 3)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				sz_digit[0] = i + j+'1';
+				CreateWindowEx
+				(
+					NULL, "Button",sz_digit,
+					WS_CHILD | WS_VISIBLE,
+					g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * j,
+					g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (2 - i/3),
+					g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+					hwnd,
+					(HMENU)IDC_BUTTON_1 + (i+j),
+					GetModuleHandle(NULL),
+					NULL
+				);
+			}
+		}
+		CreateWindowEx
+		(
+			NULL, "Button", "0",
+			WS_CHILD | WS_VISIBLE,
+			BUTTON_SHIFT_X(0), BUTTON_SHIFT_Y(3),
+			/*g_i_BUTTON_START_X, g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 3,*/
+			g_i_BUTTON_DOUBLE_SIZE, g_i_BUTTON_SIZE,
+			hwnd,
+			(HMENU)IDC_BUTTON_0,
+			GetModuleHandle(NULL),
+			NULL
+		);
+		CreateWindowEx
+		(
+			NULL, "Button", ".",
+			WS_CHILD | WS_VISIBLE,
+			BUTTON_SHIFT_X(2), BUTTON_SHIFT_Y(3),
+			/*g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL)*2,
+			g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL)*3,*/
+			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+			hwnd,
+			(HMENU)IDC_BUTTON_0,
+			GetModuleHandle(NULL),
+			NULL
+		);
+		for (int i = 0; i < 4; i++)
+		{
+			CreateWindowEx
+			(
+				NULL, "Button", g_OPERATION[i],
+				WS_CHILD | WS_VISIBLE,
+				BUTTON_SHIFT_X(3), BUTTON_SHIFT_Y(3-i),
+				/*g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 3,
+				g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (3 - i),*/
+				g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+				hwnd,
+				(HMENU)IDC_BUTTON_PLUS + i,
+				GetModuleHandle(NULL),
+				NULL
+			);
+			CreateWindowEx
+			(
+				NULL, "Button", "<-",
+				WS_CHILD | WS_VISIBLE,
+				BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(0),
+				g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+				hwnd,
+				(HMENU)IDC_BUTTON_BSP,
+				GetModuleHandle(NULL),
+				NULL
+			);
+			CreateWindowEx
+			(
+				NULL, "Button", "C",
+				WS_CHILD | WS_VISIBLE,
+				BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(1),
+				g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+				hwnd,
+				(HMENU)IDC_BUTTON_CLR,
+				GetModuleHandle(NULL),
+				NULL
+			);
+			CreateWindowEx
+			(
+				NULL, "Button", "=",
+				WS_CHILD | WS_VISIBLE,
+				BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(2),
+				g_i_BUTTON_SIZE, g_i_BUTTON_DOUBLE_SIZE,
+				hwnd,
+				(HMENU)IDC_BUTTON_EQUAL,
+				GetModuleHandle(NULL),
+				NULL
+			);
+		
+		}
+
 	}
 	break;
 	case WM_COMMAND:
