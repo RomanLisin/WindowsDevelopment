@@ -1,4 +1,6 @@
-﻿#include<Windows.h>
+﻿#define _CRT_SECURE_NO_WARNINGS
+#include<Windows.h>
+#include<cstdio>
 
 #define IDC_EDIT_DISPLAY 999
 #define IDC_BUTTON_0	1000
@@ -18,8 +20,8 @@
 #define IDC_BUTTON_ASTER	1013  // *
 #define IDC_BUTTON_SLASH	1014  // /
 
-#define IDC_BUTTON_BSP      1015  // Backspace
-#define IDC_BUTTON_CLR		1016 // Clear
+#define IDC_BUTTON_BSP      1015  // Backspace  ->
+#define IDC_BUTTON_CLR		1016 // Clear   AC
 #define	IDC_BUTTON_EQUAL	1017 // '='
 
 
@@ -36,6 +38,9 @@ CONST INT g_i_START_X = 10;
 CONST INT g_i_START_Y = 10;
 CONST INT g_i_BUTTON_START_X = g_i_START_X;
 CONST INT g_i_BUTTON_START_Y = g_i_START_X + g_i_SCREEN_HEIGHT + g_i_INTERVAL;
+
+HWND g_hButtons[18]; // Массив для кнопок 0-9 и other
+HWND hEdit; //   edit control
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -75,7 +80,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		g_sz_WINDOW_CLASS,
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		CW_USEDEFAULT, CW_USEDEFAULT,
+		300 + 4 * (g_i_BUTTON_SIZE + g_i_INTERVAL),
+		200 + 4 * (g_i_BUTTON_SIZE + g_i_INTERVAL), // добавляем место для кнопок
 		NULL,
 		NULL,
 		hInstance,
@@ -102,7 +108,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 	{
-		HWND hEdit = CreateWindowEx
+		hEdit = CreateWindowEx
 		(
 			NULL, "Edit", "0",
 			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT,
@@ -113,9 +119,50 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+		// создание кнопок
+		CONST CHAR* bLabels[]=
+		{		
+			"7","8","9", "/",
+			"4","5","6","*",
+			"1","2","3","-",
+			"0",".","=","+",
+			"AC","->"
+		};
+		INT Buttons = 18;
+		INT rows = 5;
+		INT cols = 4;
+		for (INT i = 0; i < 18; ++i)
+		{
+			INT row = i / cols; // номер строки
+			INT col= i % cols; // номер столбца
+
+			// расчёт позиции кнопки
+			INT x = g_i_BUTTON_START_X + col * (g_i_BUTTON_SIZE + g_i_INTERVAL);
+			INT y = g_i_BUTTON_START_Y + row * (g_i_BUTTON_SIZE + g_i_INTERVAL);
+
+			// создание кнопок 
+				g_hButtons[i] = CreateWindowEx
+				(
+					0, "Button", bLabels[i],
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON, // | BS_OWNERDRAW,
+					x, y,
+					g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+					hwnd,
+					(HMENU)(IDC_BUTTON_0 + i),
+					GetModuleHandle(NULL),
+					NULL
+				);
+		}
 	}
 	break;
 	case WM_COMMAND:
+		if (HIWORD(wParam) == BN_CLICKED)
+		{
+			INT b_ID = LOWORD(wParam);
+			CHAR sz_buff[256];
+			sprintf(sz_buff, "Нажата кнопка %d", b_ID);
+			MessageBox(hwnd, sz_buff, "Info", MB_OK);
+		}
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
