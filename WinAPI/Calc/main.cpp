@@ -171,6 +171,38 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		nmi->ptMinTrackSize.y = 355;
 	}
 		break;
+	case WM_SIZE:
+	{
+		INT bHeight = ((HIWORD(lParam) - g_i_BUTTON_START_X * 2 - g_i_SCREEN_HEIGHT) / 4) * 0.6;
+		
+		RECT wRect, eRect;
+		INT width, height, x, y;
+		GetClientRect(hwnd, &wRect);   // GetWindowRect(hwnd,&rect) don't work
+		GetClientRect(hEdit, &eRect);
+		width = wRect.right - wRect.left - g_i_START_X * 2;
+		height = g_i_SCREEN_HEIGHT;
+		x = g_i_START_X, y = g_i_START_Y;
+		SendMessage(hEdit, WM_SIZE, 0, MAKELPARAM(width, height));
+
+		SetWindowPos(hEdit, NULL, x, y, width, height, SWP_NOZORDER);
+
+		for (INT i = 0; i < 18; ++i)
+		{
+			INT row = i / 4; // номер строки
+			INT col = i % 4; // номер столбца
+			// расчёт позиции кнопки
+			INT bWidth = ((wRect.right - wRect.left) - g_i_BUTTON_START_X * 2) / 4;
+			INT wInterval = bWidth * 0.1;
+			bWidth -= wInterval;
+			INT bHeight = ((wRect.bottom - wRect.top) - g_i_BUTTON_START_X * 2 - g_i_SCREEN_HEIGHT) / 5;
+			INT hInterval = bHeight * 0.1;
+			bHeight -= hInterval;
+			x = g_i_BUTTON_START_X + col * (bWidth + wInterval);
+			y = g_i_START_X + g_i_SCREEN_HEIGHT + hInterval + row * (bHeight + hInterval);
+			MoveWindow(g_hButtons[i], x, y, bWidth, bHeight, TRUE);  // the same
+		}
+	}
+		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
 		break;
