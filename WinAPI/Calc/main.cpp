@@ -41,6 +41,7 @@ CONST INT g_i_BUTTON_START_Y = g_i_START_X + g_i_SCREEN_HEIGHT + g_i_INTERVAL;
 
 HWND g_hButtons[18]; // Массив для кнопок 0-9 и other
 HWND hEdit; //   edit control
+HFONT g_hFont = NULL;
 void DrawRoundedButton(HDC hdc, RECT rect, INT radius, CONST CHAR* text);
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -174,7 +175,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	case WM_SIZE:
 	{
 		INT bHeight = ((HIWORD(lParam) - g_i_BUTTON_START_X * 2 - g_i_SCREEN_HEIGHT) / 4) * 0.6;
-		
+		INT fontSize = -MulDiv(bHeight, 48,GetDeviceCaps(GetDC(hwnd), LOGPIXELSY)); // Высота шрифта в логических единицах
 		RECT wRect, eRect;
 		INT width, height, x, y;
 		GetClientRect(hwnd, &wRect);   // GetWindowRect(hwnd,&rect) don't work
@@ -201,6 +202,34 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			y = g_i_START_X + g_i_SCREEN_HEIGHT + hInterval + row * (bHeight + hInterval);
 			MoveWindow(g_hButtons[i], x, y, bWidth, bHeight, TRUE);  // the same
 		}
+		if (g_hFont)
+		{
+			DeleteObject(g_hFont); // удаляем старый шрифт
+		}
+
+		g_hFont = CreateFont
+		(
+			fontSize,                // высота символов
+			0,                       // ширина символов
+			0,                       // угол ориентации
+			0,                       // угол начертания
+			FW_NORMAL,               //	толщина шрифта
+			FALSE,                   // курсив
+			FALSE,                   // подчеркивание
+			FALSE,                   // зачеркивание
+			DEFAULT_CHARSET,         // набор символов
+			OUT_DEFAULT_PRECIS,      // точность вывода
+			CLIP_DEFAULT_PRECIS,     // точность отсеченияd
+			DEFAULT_QUALITY,         // качество вывода
+			DEFAULT_PITCH | FF_SWISS,// шаг шрифта и семейство
+			"Arial"                  // имя шрифта
+		);
+
+		// применяем шрифт ко всем кнопкам
+		for (INT i = 0; i < 18; ++i)
+		{
+			SendMessage(g_hButtons[i], WM_SETFONT, (WPARAM)g_hFont, TRUE);
+		}
 	}
 		break;
 	case WM_DRAWITEM:
@@ -223,7 +252,13 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 		break;
 	case WM_DESTROY:
+	{
+		if (g_hFont)
+		{
+			DeleteObject(g_hFont);
+		}
 		PostQuitMessage(0);
+	}
 		break;
 	case WM_CLOSE:
 		DestroyWindow(hwnd);
