@@ -185,7 +185,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		x = g_i_START_X, y = g_i_START_Y;
 		SendMessage(hEdit, WM_SIZE, 0, MAKELPARAM(width, height));
 
-		SetWindowPos(hEdit, NULL, x, y, width, height, SWP_NOZORDER);
+		SetWindowPos(hEdit, NULL, x, y, width, height, SWP_SHOWWINDOW); // SWP_NOZORDER);
 
 		for (INT i = 0; i < 18; ++i)
 		{
