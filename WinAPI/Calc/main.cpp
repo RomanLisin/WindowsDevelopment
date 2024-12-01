@@ -49,8 +49,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	wClass.cbClsExtra = 0;
 	wClass.cbWndExtra = 0;
 
-	wClass.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
-	wClass.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+	wClass.hIcon = (HICON)LoadImage(NULL, "ICO\\CalcEx.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE,
+		LR_LOADFROMFILE);
+	wClass.hIconSm = (HICON)LoadImage(NULL, "ICO\\CalcExSm.ico", IMAGE_ICON, LR_DEFAULTSIZE, LR_DEFAULTSIZE,
+		LR_LOADFROMFILE);
 	wClass.hCursor = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_ARROW));
 	wClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 
