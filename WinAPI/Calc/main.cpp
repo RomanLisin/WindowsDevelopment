@@ -32,10 +32,10 @@ CONST INT g_i_SCREEN_HEIGHT = 22;
 CONST INT g_i_BUTTON_SIZE = 50; // размер кнопки в пикселах
 CONST INT g_i_INTERVAL = 5;		// расстояние между кнопками
 
-CONST INT g_i_START_X = 10;		
-CONST INT g_i_START_Y = 10;		
-CONST INT g_i_BUTTON_START_X = g_i_START_X;		
-CONST INT g_i_BUTTON_START_Y = g_i_START_X + g_i_SCREEN_HEIGHT + g_i_INTERVAL;		
+CONST INT g_i_START_X = 10;
+CONST INT g_i_START_Y = 10;
+CONST INT g_i_BUTTON_START_X = g_i_START_X;
+CONST INT g_i_BUTTON_START_Y = g_i_START_X + g_i_SCREEN_HEIGHT + g_i_INTERVAL;
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -44,7 +44,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	//1) Регистрация класса окна
 	WNDCLASSEX wClass;
 	ZeroMemory(&wClass, sizeof(wClass));  // Зануляем
-	wClass.style = 0;     
+	wClass.style = 0;
 	wClass.cbSize = sizeof(wClass);
 	wClass.cbClsExtra = 0;
 	wClass.cbWndExtra = 0;
@@ -65,7 +65,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		return 0;
 	}
 	//2) Создание окна
-	
+
 	HWND hwnd = CreateWindowEx
 	(
 		NULL,
@@ -83,7 +83,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	ShowWindow(hwnd, nCmdShow);
 	UpdateWindow(hwnd);
 	//3) Запуск цикла сообщение:
-	
+
 	MSG msg;
 	while (GetMessage(&msg, NULL, 0, 0) > 0)
 	{
@@ -112,12 +112,12 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 	}
-		break;
+	break;
 	case WM_COMMAND:
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
-			break;
+		break;
 	case WM_CLOSE:
 		DestroyWindow(hwnd);
 		break;
