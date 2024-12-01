@@ -1,4 +1,5 @@
 ﻿#include<Windows.h>
+#include"Resource.h"
 
 #define IDC_EDIT_DISPLAY 999
 #define IDC_BUTTON_0	1000
@@ -59,8 +60,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	wClass.cbClsExtra = 0;
 	wClass.cbWndExtra = 0;
 
-	wClass.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
-	wClass.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_APPLICATION));
+	wClass.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDC_ICON1));
+	wClass.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDC_ICON1));
 	wClass.hCursor = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_ARROW));
 	wClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 
