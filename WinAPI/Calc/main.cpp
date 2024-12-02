@@ -3,11 +3,7 @@
 #include"Resource.h"
 #include"Dimensions.h"
 
-
-
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc_VPD_311";
-
-
 
 CONST CHAR* g_OPERATION[] = { "+" ,"-", "*","/" };
 
@@ -16,6 +12,8 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
+	float a = -34.01;
+	float b = 8.3;
 	//1) Регистрация класса окна
 	WNDCLASSEX wClass;
 	ZeroMemory(&wClass, sizeof(wClass));  // Зануляем
@@ -216,4 +214,14 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	default: return DefWindowProc(hwnd, uMsg, wParam, lParam);
 	}
 	return FALSE;
+}
+
+INT GetTitleBarHeight(HWND hwnd)
+{
+	RECT window_rect;
+	RECT client_rect;
+	GetWindowRect(hwnd, &window_rect);
+	GetClientRect(hwnd, &client_rect);
+	INT title_bar_height = (window_rect.bottom - window_rect.top) - (client_rect.bottom - client_rect.top);
+	return title_bar_height;
 }

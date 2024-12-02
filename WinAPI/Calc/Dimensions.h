@@ -1,4 +1,5 @@
 #pragma once
+#include<Windows.h>
 
 CONST INT g_i_BUTTON_SIZE = 50; // размер кнопки в пикселах
 CONST INT g_i_INTERVAL = 5;		// расстояние между кнопками
