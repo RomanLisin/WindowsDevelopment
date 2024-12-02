@@ -1,5 +1,7 @@
-﻿#include<Windows.h>
+﻿#define _CRT_SECURE_NO_WARNINGS  // добавляем при ошибке С4996
+#include<Windows.h>
 #include"Resource.h"
+//#include"Demansions.h"
 
 #define IDC_EDIT_DISPLAY 999
 #define IDC_BUTTON_0	1000
@@ -60,8 +62,8 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	wClass.cbClsExtra = 0;
 	wClass.cbWndExtra = 0;
 
-	wClass.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDC_ICON1));
-	wClass.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDC_ICON1));
+	wClass.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
+	wClass.hIconSm = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_ICON1));
 	wClass.hCursor = LoadCursor(hInstance, MAKEINTRESOURCE(IDC_ARROW));
 	wClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 
@@ -136,7 +138,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (2 - i/3),
 					g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
 					hwnd,
-					(HMENU)IDC_BUTTON_1 + (i+j),
+					(HMENU)(IDC_BUTTON_1 + (i+j)),
 					GetModuleHandle(NULL),
 					NULL
 				);
@@ -221,6 +223,29 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	break;
 	case WM_COMMAND:
+	{
+		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+		CONST INT SIZE = 256;
+		CHAR sz_display[MAX_PATH]{};
+		CHAR sz_digit[2]{};
+		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
+		{
+			sz_digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
+			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
+			if (strlen(sz_display) == 1 && sz_display[0] == '0')
+				sz_display[0] = sz_digit[0];
+			else
+			strcat(sz_display, sz_digit);
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+		}
+		if (LOWORD(wParam) == IDC_BUTTON_POINT)
+		{
+			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);//cчитываем содержимое экрана
+			if (strchr(sz_display, '.'))break; // чтобы точку можно было поставить только одну
+			strcat(sz_display, ".");
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+		}
+	}
 		break;
 	case WM_DESTROY:
 		PostQuitMessage(0);
