@@ -1,51 +1,13 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS  // добавляем при ошибке С4996
 #include<Windows.h>
 #include"Resource.h"
-//#include"Demansions.h"
+#include"Dimensions.h"
 
-#define IDC_EDIT_DISPLAY 999
-#define IDC_BUTTON_0	1000
-#define IDC_BUTTON_1	1001
-#define IDC_BUTTON_2	1002
-#define IDC_BUTTON_3	1003
-#define IDC_BUTTON_4	1004
-#define IDC_BUTTON_5	1005
-#define IDC_BUTTON_6	1006
-#define IDC_BUTTON_7	1007
-#define IDC_BUTTON_8	1008
-#define IDC_BUTTON_9	1009
-#define IDC_BUTTON_POINT	1010
-
-#define IDC_BUTTON_PLUS		1011
-#define IDC_BUTTON_MINUS	1012
-#define IDC_BUTTON_ASTER	1013  // *
-#define IDC_BUTTON_SLASH	1014  // /
-
-#define IDC_BUTTON_BSP      1015  // Backspace
-#define IDC_BUTTON_CLR		1016 // Clear
-#define	IDC_BUTTON_EQUAL	1017 // '='
 
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc_VPD_311";
 
 
-
-CONST INT g_i_BUTTON_SIZE = 50; // размер кнопки в пикселах
-CONST INT g_i_INTERVAL = 5;		// расстояние между кнопками
-CONST INT g_i_BUTTON_DOUBLE_SIZE = g_i_BUTTON_SIZE*2+ g_i_INTERVAL; // размер кнопки в пикселах
-
-CONST INT g_i_SCREEN_WIDTH = g_i_BUTTON_SIZE*5 + g_i_INTERVAL*4;
-CONST INT g_i_SCREEN_HEIGHT = 22;
-
-CONST INT g_i_START_X = 10;
-CONST INT g_i_START_Y = 10;
-CONST INT g_i_BUTTON_START_X = g_i_START_X;
-CONST INT g_i_BUTTON_START_Y = g_i_START_X + g_i_SCREEN_HEIGHT + g_i_INTERVAL;
-#define BUTTON_SHIFT_X(column) g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL)*(column)
-#define BUTTON_SHIFT_Y(row) g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL)*(row)
-
-CONST INT g_i_WINDOW_WIDTH = g_i_SCREEN_WIDTH + g_i_START_X * 2;
-CONST INT g_i_WINDOW_HEIGHT = g_i_START_X + g_i_SCREEN_HEIGHT + g_i_BUTTON_SIZE*4 + g_i_INTERVAL*5;
 
 CONST CHAR* g_OPERATION[] = { "+" ,"-", "*","/" };
 
@@ -138,7 +100,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (2 - i/3),
 					g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
 					hwnd,
-					(HMENU)(IDC_BUTTON_1 + (i+j)),
+					(HMENU)(IDC_BUTTON_1 + i+j),
 					GetModuleHandle(NULL),
 					NULL
 				);
@@ -165,7 +127,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL)*3,*/
 			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
 			hwnd,
-			(HMENU)IDC_BUTTON_0,
+			(HMENU)IDC_BUTTON_POINT,
 			GetModuleHandle(NULL),
 			NULL
 		);
@@ -184,49 +146,47 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				GetModuleHandle(NULL),
 				NULL
 			);
-			CreateWindowEx
-			(
-				NULL, "Button", "<-",
-				WS_CHILD | WS_VISIBLE,
-				BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(0),
-				g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
-				hwnd,
-				(HMENU)IDC_BUTTON_BSP,
-				GetModuleHandle(NULL),
-				NULL
-			);
-			CreateWindowEx
-			(
-				NULL, "Button", "C",
-				WS_CHILD | WS_VISIBLE,
-				BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(1),
-				g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
-				hwnd,
-				(HMENU)IDC_BUTTON_CLR,
-				GetModuleHandle(NULL),
-				NULL
-			);
-			CreateWindowEx
-			(
-				NULL, "Button", "=",
-				WS_CHILD | WS_VISIBLE,
-				BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(2),
-				g_i_BUTTON_SIZE, g_i_BUTTON_DOUBLE_SIZE,
-				hwnd,
-				(HMENU)IDC_BUTTON_EQUAL,
-				GetModuleHandle(NULL),
-				NULL
-			);
-		
 		}
-
+		CreateWindowEx
+		(
+			NULL, "Button", "<-",
+			WS_CHILD | WS_VISIBLE,
+			BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(0),
+			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+			hwnd,
+			(HMENU)IDC_BUTTON_BSP,
+			GetModuleHandle(NULL),
+			NULL
+		);
+		CreateWindowEx
+		(
+			NULL, "Button", "C",
+			WS_CHILD | WS_VISIBLE,
+			BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(1),
+			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
+			hwnd,
+			(HMENU)IDC_BUTTON_CLR,
+			GetModuleHandle(NULL),
+			NULL
+		);
+		CreateWindowEx
+		(
+			NULL, "Button", "=",
+			WS_CHILD | WS_VISIBLE,
+			BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(2),
+			g_i_BUTTON_SIZE, g_i_BUTTON_DOUBLE_SIZE,
+			hwnd,
+			(HMENU)IDC_BUTTON_EQUAL,
+			GetModuleHandle(NULL),
+			NULL
+		);
 	}
 	break;
 	case WM_COMMAND:
 	{
 		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
 		CONST INT SIZE = 256;
-		CHAR sz_display[MAX_PATH]{};
+		CHAR sz_display[SIZE]{};
 		CHAR sz_digit[2]{};
 		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
 		{
@@ -235,15 +195,15 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			if (strlen(sz_display) == 1 && sz_display[0] == '0')
 				sz_display[0] = sz_digit[0];
 			else
-			strcat(sz_display, sz_digit);
-			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+				strcat(sz_display, sz_digit);
+				SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 		}
 		if (LOWORD(wParam) == IDC_BUTTON_POINT)
 		{
 			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);//cчитываем содержимое экрана
 			if (strchr(sz_display, '.'))break; // чтобы точку можно было поставить только одну
-			strcat(sz_display, ".");
-			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+				strcat(sz_display, ".");
+				SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 		}
 	}
 		break;
