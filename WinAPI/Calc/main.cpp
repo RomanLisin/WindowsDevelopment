@@ -83,11 +83,15 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 		CHAR sz_digit[2] = {};
-		for (int i = 6; i >= 0; i -= 3)
+		for (int i = 6; i >= 0; i -= 3)  //отвечает за ряды кнопок сверху вниз ,  i равнo : 6, 3, 0. Это три ряда(3 строки).
 		{
-			for (int j = 0; j < 3; j++)
+			for (int j = 0; j < 3; j++) //отвечает за кнопки в одном ряду слева направо,j равнo : 0, 1, 2. Это три кнопки в строке
 			{
-				sz_digit[0] = i + j+'1';
+				sz_digit[0] = i + j+'1'; // создаёт текст кнопки
+				/*	i + j — порядковый номер кнопки(0, 1, 2 и так далее)
+					'1' — добавление, чтобы сдвинуть номера в диапазон '1' — '9'
+					первая кнопка (i = 6, j = 0) : sz_digit[0] = 6 + 0 + '1' = '7'
+					вторая кнопка (i = 6, j = 1) : sz_digit[0] = 6 + 1 + '1' = '8' и т.д. */
 				CreateWindowEx
 				(
 					NULL, "Button",sz_digit,
@@ -96,8 +100,8 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (2 - i/3),
 					g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
 					hwnd,
-					(HMENU)(IDC_BUTTON_1 + i+j),
-					GetModuleHandle(NULL),
+					(HMENU)(IDC_BUTTON_1 + i+j),  //ID дочернего окна позиция кнопки по горизонтали зависит от j (индекс в ряду)
+					GetModuleHandle(NULL),				// позиция кнопки по вертикали зависит от i (номера ряда)
 					NULL
 				);
 			}
@@ -169,7 +173,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		(
 			NULL, "Button", "=",
 			WS_CHILD | WS_VISIBLE,
-			BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(2),
+			BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(2),  
 			g_i_BUTTON_SIZE, g_i_BUTTON_DOUBLE_SIZE,
 			hwnd,
 			(HMENU)IDC_BUTTON_EQUAL,
