@@ -1,9 +1,9 @@
-#pragma once
+п»ї#pragma once
 #include<Windows.h>
 
-CONST INT g_i_BUTTON_SIZE = 50; // размер кнопки в пикселах
-CONST INT g_i_INTERVAL = 5;		// расстояние между кнопками
-CONST INT g_i_BUTTON_DOUBLE_SIZE = g_i_BUTTON_SIZE * 2 + g_i_INTERVAL; // размер кнопки в пикселах
+CONST INT g_i_BUTTON_SIZE = 50; // СЂР°Р·РјРµСЂ РєРЅРѕРїРєРё РІ РїРёРєСЃРµР»Р°С…
+CONST INT g_i_INTERVAL = 5;		// СЂР°СЃСЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ РєРЅРѕРїРєР°РјРё
+CONST INT g_i_BUTTON_DOUBLE_SIZE = g_i_BUTTON_SIZE * 2 + g_i_INTERVAL; // СЂР°Р·РјРµСЂ РєРЅРѕРїРєРё РІ РїРёРєСЃРµР»Р°С…
 
 CONST INT g_i_SCREEN_WIDTH = g_i_BUTTON_SIZE * 5 + g_i_INTERVAL * 4;
 CONST INT g_i_SCREEN_HEIGHT = 22;

@@ -12,8 +12,6 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
-	float a = -34.01;
-	float b = 8.3;
 	//1) Регистрация класса окна
 	WNDCLASSEX wClass;
 	ZeroMemory(&wClass, sizeof(wClass));  // Зануляем
