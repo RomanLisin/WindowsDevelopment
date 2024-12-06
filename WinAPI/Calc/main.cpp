@@ -201,6 +201,24 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				strcat(sz_display, ".");
 				SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 		}
+		if (LOWORD(wParam) == IDC_BUTTON_BSP)
+		{
+			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
+			if (strlen(sz_display) > 0)  sz_display[strlen(sz_display) - 1] = '\0';
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+		}
+		if (LOWORD(wParam) == IDC_BUTTON_CLR)
+		{
+			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
+			sz_display[0] = '\0';
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+		}
+		if (LOWORD(wParam) == IDC_BUTTON_EQUAL)
+		{
+			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
+			//sz_display = Calc(sz_display);
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+		}
 	}
 		break;
 	case WM_DESTROY:
