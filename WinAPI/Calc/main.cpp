@@ -2,10 +2,19 @@
 #include<Windows.h>
 #include"Resource.h"
 #include"Dimensions.h"
+#include"string"
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc_VPD_311";
 
 CONST CHAR* g_OPERATION[] = { "+" ,"-", "*","/" };
+
+DOUBLE* d_numbers = NULL;
+CHAR* c_symbols = NULL;
+
+template<typename T>
+void ExpandArray(T*& array, INT& capacity, INT initialSize = 10);
+
+CHAR* GetButtonText(HWND hButton);
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 //INT GetTitleBarHeight(HWND hwnd);
@@ -219,9 +228,54 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			//sz_display = Calc(sz_display);
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 		}
+		
+
+		if (LOWORD(wParam) == IDC_BUTTON_PLUS)
+		{
+			memcpy( /*to*/ sz_digit, /*from*/ GetButtonText(GetDlgItem(hwnd, IDC_BUTTON_PLUS)), sizeof(sz_digit));// /*capacity * sizeof(T)*/); // побайтовое копирование, игнорируя типы данных массива
+			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
+			strcat(sz_display, sz_digit);
+			//sz_display[1] = '\0';
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+
+		}
 	}
 		break;
+	case WM_CHAR:
+	{
+		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+		CONST INT SIZE = 256;
+		CHAR sz_display[SIZE]{};
+		
+		INT numIndex = 0, symIndex = 0;
+		INT numCapacity = 0, symCapapcity = 0;
+		std::string currentNumber;  // промежуточная строка
+
+		CHAR inputChar = static_cast<CHAR>(LOWORD(wParam));
+		
+		if (inputChar == '+' || inputChar == '-' || inputChar == '*' || inputChar == '/')
+		{
+			if (!currentNumber.empty())
+			{
+				if (numIndex >= numCapacity) ExpandArray(d_numbers, numCapacity);
+				d_numbers[numIndex++] == std::atof(currentNumber.c_str());  //converts str into a double, then returns that value. str must start with a valid number, but can be terminated with any non-numerical character
+				currentNumber.clear();
+			}
+			if (symIndex >= symCapapcity) ExpandArray(c_symbols, numCapacity);
+			c_symbols[symIndex++] == inputChar;
+
+		}
+		else if (isdigit(inputChar) || inputChar == '.')
+		{
+			currentNumber += inputChar;
+		}
+
+		
+	}
+	break;
 	case WM_DESTROY:
+		delete[] d_numbers;
+		delete[] c_symbols;
 		PostQuitMessage(0);
 		break;
 	case WM_CLOSE:
@@ -240,4 +294,26 @@ INT GetTitleBarHeight(HWND hwnd)
 	GetClientRect(hwnd, &client_rect);
 	INT title_bar_height = (window_rect.bottom - window_rect.top) - (client_rect.bottom - client_rect.top);
 	return title_bar_height;
+}
+
+// функция для увеличения размера массива
+template<typename T>
+void ExpandArray(T*& array, INT& capacity, INT initialSize)
+{
+	INT newCapacity = capacity == 0 ? initialSize : capacity * 2;
+	T* newArray = new T[newCapacity];
+	if (array)
+	{
+		memcpy( /*to*/ newArray, /*from*/ array, capacity * sizeof(T)); // побайтовое копирование, игнорируя типы данных массива
+		delete[] array;
+	}
+	array = newArray;
+	capacity = newCapacity;
+}
+CHAR* GetButtonText(HWND hButton)
+{
+	CHAR txtBuff[256];
+	INT txtLength = GetWindowText(hButton, txtBuff, sizeof(txtBuff) / sizeof(CHAR));
+	if (txtLength > 0) return txtBuff;
+	else MessageBox(NULL, "Failed to get button text or text is empty", "Error", MB_OK);
 }
