@@ -14,6 +14,7 @@ CHAR* c_symbols = NULL;
 template<typename T>
 void ExpandArray(T*& array, INT& capacity, INT initialSize = 10);
 
+DOUBLE Calculate(DOUBLE operand1, DOUBLE operand2, CHAR operation);
 //CHAR* GetButtonText(HWND hButton);
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -193,6 +194,12 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CONST INT SIZE = 256;
 		CHAR sz_display[SIZE]{};
 		CHAR sz_digit[2]{};
+
+		static DOUBLE lastResult = 0;
+		static DOUBLE lastOperand = 0;
+		static CHAR lastOperation = '\0';
+
+
 		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
 		{
 			sz_digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
@@ -202,95 +209,121 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			else
 				strcat(sz_display, sz_digit);
 				SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
-		}
-		if (LOWORD(wParam) == IDC_BUTTON_POINT)
+		}else if (LOWORD(wParam) == IDC_BUTTON_POINT)
 		{
 			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);//cчитываем содержимое экрана
 			if (strchr(sz_display, '.'))break; // чтобы точку можно было поставить только одну
 				strcat(sz_display, ".");
 				SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
-		}
-		if (LOWORD(wParam) == IDC_BUTTON_BSP)
+		}else if (LOWORD(wParam) == IDC_BUTTON_BSP)
 		{
+
 			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
 			if (strlen(sz_display) > 0)  sz_display[strlen(sz_display) - 1] = '\0';
+			if (strlen(sz_display) == 0) { sz_display[0] = '0'; sz_display[1] = '\0'; }
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 		}
-		if (LOWORD(wParam) == IDC_BUTTON_CLR)
+		else if (LOWORD(wParam) >= IDC_BUTTON_PLUS && LOWORD(wParam) <= IDC_BUTTON_SLASH)
 		{
-			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
-			sz_display[0] = '\0';
-			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
-		}
-		if (LOWORD(wParam) == IDC_BUTTON_EQUAL)
-		{
-			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
-			//sz_display = Calc(sz_display);
-			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
-		}
-		
+			CHAR debug[256];
+			/*sprintf(debug, "wParam: %d", LOWORD(wParam));
+			MessageBox(hwnd, debug, "Debug Info", MB_OK);*/
+			//sz_digit[0] = g_OPERATION[LOWORD(wParam) - IDC_BUTTON_PLUS][0]; sz_digit[1] = '\0';
+			//if (!isdigit(sz_display[strlen(sz_display)]))break; // если предыдущий знак не цифра
+			//CHAR operation = g_OPERATION[LOWORD(wParam) - IDC_BUTTON_PLUS][0];
 
-		if (LOWORD(wParam) == IDC_BUTTON_PLUS)
-		{
-			GetWindowText(GetDlgItem(hwnd, IDC_BUTTON_PLUS), sz_digit, sizeof(sz_digit) / sizeof(CHAR));
+			GetWindowText((HWND)lParam, sz_digit, sizeof(sz_digit) / sizeof(CHAR));
 			//memcpy( /*to*/ sz_digit, /*from*/ GetButtonText(GetDlgItem(hwnd, IDC_BUTTON_PLUS)), sizeof(sz_digit));// /*capacity * sizeof(T)*/); // побайтовое копирование, игнорируя типы данных массива
 			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
-			if (sz_display[strlen(sz_display) - 1] == '+')break;  // не даёт поставить следующий повторяющийся знак операции
+			////if (sz_display[strlen(sz_display) - 1] == '+')break;  // не даёт поставить следующий повторяющийся знак операции +
+			//strcat(sz_display, sz_digit);
+			////sz_display[1] = '\0';		wParam	0x040003e7	unsigned int
+
+
+			//lastOperand = std::atof(sz_display);
+			//if (lastOperand == 0)	lastResult = lastOperand;
+			////lastOperand = sz_digit[0];
+
 			strcat(sz_display, sz_digit);
-			//sz_display[1] = '\0';
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 		}
-		if (LOWORD(wParam) == IDC_BUTTON_ASTER)
+		//if (LOWORD(wParam) == IDC_BUTTON_MINUS)
+		//{
+		//	GetWindowText(GetDlgItem(hwnd, IDC_BUTTON_MINUS), sz_digit, sizeof(sz_digit) / sizeof(CHAR));
+		//	//memcpy( /*to*/ sz_digit, /*from*/ GetButtonText(GetDlgItem(hwnd, IDC_BUTTON_PLUS)), sizeof(sz_digit));// /*capacity * sizeof(T)*/); // побайтовое копирование, игнорируя типы данных массива
+		//	SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
+		//	if (!isdigit(sz_display[strlen(sz_display) - 1]))break; // если предыдущий знак не цифра
+		//	strcat(sz_display, sz_digit);
+		//	//sz_display[1] = '\0';
+		//	SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+		//}
+
+		//if (LOWORD(wParam) == IDC_BUTTON_ASTER)
+		//{
+		//	GetWindowText(GetDlgItem(hwnd, IDC_BUTTON_ASTER), sz_digit, sizeof(sz_digit) / sizeof(CHAR));
+		//	//memcpy( /*to*/ sz_digit, /*from*/ GetButtonText(GetDlgItem(hwnd, IDC_BUTTON_ASTER)), sizeof(sz_digit));// побайтовое копирование, игнорируя типы данных массива
+
+		//	if (!isdigit(sz_display[strlen(sz_display) - 1]))break; // если предыдущий знак не цифра
+		//	SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
+		//	strcat(sz_display, sz_digit);
+		//
+		//	SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+		//}
+		//if (LOWORD(wParam) == IDC_BUTTON_SLASH)
+		//{
+		//	GetWindowText(GetDlgItem(hwnd, IDC_BUTTON_SLASH), sz_digit, sizeof(sz_digit) / sizeof(CHAR));
+		//	//memcpy( /*to*/ sz_digit, /*from*/ GetButtonText(GetDlgItem(hwnd, IDC_BUTTON_ASTER)), sizeof(sz_digit));// побайтовое копирование, игнорируя типы данных массива
+		//	if (!isdigit(sz_display[strlen(sz_display) - 1]))break; // если предыдущий знак не цифра
+		//	SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
+		//	strcat(sz_display, sz_digit);
+
+		//	SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+		//}
+		else if (LOWORD(wParam) == IDC_BUTTON_CLR)
 		{
-			GetWindowText(GetDlgItem(hwnd, IDC_BUTTON_ASTER), sz_digit, sizeof(sz_digit) / sizeof(CHAR));
-			//memcpy( /*to*/ sz_digit, /*from*/ GetButtonText(GetDlgItem(hwnd, IDC_BUTTON_ASTER)), sizeof(sz_digit));// побайтовое копирование, игнорируя типы данных массива
 			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
-			strcat(sz_display, sz_digit);
-		
+			sz_display[0] = '0'; sz_display[1] = '\0';
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 		}
-		if (LOWORD(wParam) == IDC_BUTTON_SLASH)
-		{
-			GetWindowText(GetDlgItem(hwnd, IDC_BUTTON_SLASH), sz_digit, sizeof(sz_digit) / sizeof(CHAR)+1);
-			//memcpy( /*to*/ sz_digit, /*from*/ GetButtonText(GetDlgItem(hwnd, IDC_BUTTON_ASTER)), sizeof(sz_digit));// побайтовое копирование, игнорируя типы данных массива
-			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
-			strcat(sz_display, sz_digit);
-
-			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
-		}
-	}
-		break;
-	case WM_CHAR:
-	{
-		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
-		CONST INT SIZE = 256;
-		CHAR sz_display[SIZE]{};
-		
-		INT numIndex = 0, symIndex = 0;
-		INT numCapacity = 0, symCapapcity = 0;
-		std::string currentNumber;  // промежуточная строка
-
-		CHAR inputChar = static_cast<CHAR>(LOWORD(wParam));
-		
-		if (inputChar == '+' || inputChar == '-' || inputChar == '*' || inputChar == '/')
-		{
-			if (!currentNumber.empty())
-			{
-				if (numIndex >= numCapacity) ExpandArray(d_numbers, numCapacity);
-				d_numbers[numIndex++] == std::atof(currentNumber.c_str());  //converts str into a double, then returns that value. str must start with a valid number, but can be terminated with any non-numerical character
-				currentNumber.clear();
-			}
-			if (symIndex >= symCapapcity) ExpandArray(c_symbols, numCapacity);
-			c_symbols[symIndex++] == inputChar;
-
-		}
-		else if (isdigit(inputChar) || inputChar == '.')
-		{
-			currentNumber += inputChar;
-		}
-
+		//if (LOWORD(wParam) == IDC_BUTTON_EQUAL)
+		//{
+		//	SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
+		//	//sz_display = Calc(sz_display);
+		//	SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+		//}
 		
 	}
+	//case WM_CHAR:
+	//{
+	//	HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+	//	CONST INT SIZE = 256;
+	//	CHAR sz_display[SIZE]{};
+	//	
+	//	INT numIndex = 0, symIndex = 0;
+	//	INT numCapacity = 0, symCapapcity = 0;
+	//	std::string currentNumber;  // промежуточная строка
+
+	//	CHAR inputChar = static_cast<CHAR>(LOWORD(wParam));
+	//	
+	//	if (inputChar == '+' || inputChar == '-' || inputChar == '*' || inputChar == '/')
+	//	{
+	//		if (!currentNumber.empty())
+	//		{
+	//			if (numIndex >= numCapacity) ExpandArray(d_numbers, numCapacity);
+	//			d_numbers[numIndex++] == std::atof(currentNumber.c_str());  //converts str into a double, then returns that value. str must start with a valid number, but can be terminated with any non-numerical character
+	//			currentNumber.clear();
+	//		}
+	//		if (symIndex >= symCapapcity) ExpandArray(c_symbols, numCapacity);
+	//		c_symbols[symIndex++] == inputChar;
+
+	//	}
+	//	else if (isdigit(inputChar) || inputChar == '.')
+	//	{
+	//		currentNumber += inputChar;
+	//	}
+
+	//	
+	//}
 	break;
 	case WM_DESTROY:
 		delete[] d_numbers;
@@ -336,3 +369,14 @@ void ExpandArray(T*& array, INT& capacity, INT initialSize)
 //	if (txtLength > 0) return txtBuff;
 //	else MessageBox(NULL, "Failed to get button text or text is empty", "Error", MB_OK);
 //}
+DOUBLE Calculate(DOUBLE operand1, DOUBLE operand2, CHAR operation)
+{
+	switch (operation)
+	{
+	case '+': return operand1 + operand2;
+	case '-': return operand1 - operand2;
+	case '*': return operand1 * operand2;
+	case '/': return operand2 != 0 ? operand1 / operand2: 0;
+	default: return 0;
+	}
+}
