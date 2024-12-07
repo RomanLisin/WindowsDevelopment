@@ -14,7 +14,7 @@ CHAR* c_symbols = NULL;
 template<typename T>
 void ExpandArray(T*& array, INT& capacity, INT initialSize = 10);
 
-CHAR* GetButtonText(HWND hButton);
+//CHAR* GetButtonText(HWND hButton);
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 //INT GetTitleBarHeight(HWND hwnd);
@@ -232,12 +232,31 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		if (LOWORD(wParam) == IDC_BUTTON_PLUS)
 		{
-			memcpy( /*to*/ sz_digit, /*from*/ GetButtonText(GetDlgItem(hwnd, IDC_BUTTON_PLUS)), sizeof(sz_digit));// /*capacity * sizeof(T)*/); // побайтовое копирование, игнорируя типы данных массива
+			GetWindowText(GetDlgItem(hwnd, IDC_BUTTON_PLUS), sz_digit, sizeof(sz_digit) / sizeof(CHAR));
+			//memcpy( /*to*/ sz_digit, /*from*/ GetButtonText(GetDlgItem(hwnd, IDC_BUTTON_PLUS)), sizeof(sz_digit));// /*capacity * sizeof(T)*/); // побайтовое копирование, игнорируя типы данных массива
 			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
+			if (sz_display[strlen(sz_display) - 1] == '+')break;  // не даёт поставить следующий повторяющийся знак операции
 			strcat(sz_display, sz_digit);
 			//sz_display[1] = '\0';
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+		}
+		if (LOWORD(wParam) == IDC_BUTTON_ASTER)
+		{
+			GetWindowText(GetDlgItem(hwnd, IDC_BUTTON_ASTER), sz_digit, sizeof(sz_digit) / sizeof(CHAR));
+			//memcpy( /*to*/ sz_digit, /*from*/ GetButtonText(GetDlgItem(hwnd, IDC_BUTTON_ASTER)), sizeof(sz_digit));// побайтовое копирование, игнорируя типы данных массива
+			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
+			strcat(sz_display, sz_digit);
+		
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+		}
+		if (LOWORD(wParam) == IDC_BUTTON_SLASH)
+		{
+			GetWindowText(GetDlgItem(hwnd, IDC_BUTTON_SLASH), sz_digit, sizeof(sz_digit) / sizeof(CHAR)+1);
+			//memcpy( /*to*/ sz_digit, /*from*/ GetButtonText(GetDlgItem(hwnd, IDC_BUTTON_ASTER)), sizeof(sz_digit));// побайтовое копирование, игнорируя типы данных массива
+			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display); // считываем строку
+			strcat(sz_display, sz_digit);
 
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 		}
 	}
 		break;
@@ -310,10 +329,10 @@ void ExpandArray(T*& array, INT& capacity, INT initialSize)
 	array = newArray;
 	capacity = newCapacity;
 }
-CHAR* GetButtonText(HWND hButton)
-{
-	CHAR txtBuff[256];
-	INT txtLength = GetWindowText(hButton, txtBuff, sizeof(txtBuff) / sizeof(CHAR));
-	if (txtLength > 0) return txtBuff;
-	else MessageBox(NULL, "Failed to get button text or text is empty", "Error", MB_OK);
-}
+//CHAR* GetButtonText(HWND hButton)
+//{
+//	CHAR txtBuff[256];
+//	INT txtLength = GetWindowText(hButton, txtBuff, sizeof(txtBuff) / sizeof(CHAR));
+//	if (txtLength > 0) return txtBuff;
+//	else MessageBox(NULL, "Failed to get button text or text is empty", "Error", MB_OK);
+//}
