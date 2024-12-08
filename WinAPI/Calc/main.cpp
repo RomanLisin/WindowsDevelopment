@@ -12,6 +12,8 @@ CONST CHAR* g_OPERATION[] = { "+" ,"-", "*","/" };
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 //INT GetTitleBarHeight(HWND hwnd);
 
+VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
+
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
 	//1) Регистрация класса окна
@@ -108,10 +110,11 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				);
 			}
 		}
-		CreateWindowEx
+		// 1) 
+		HWND hButton_0 = CreateWindowEx
 		(
 			NULL, "Button", "0",
-			WS_CHILD | WS_VISIBLE,
+			WS_CHILD | WS_VISIBLE | BS_BITMAP,
 			BUTTON_SHIFT_X(0), BUTTON_SHIFT_Y(3),
 			/*g_i_BUTTON_START_X, g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 3,*/
 			g_i_BUTTON_DOUBLE_SIZE, g_i_BUTTON_SIZE,
@@ -120,6 +123,10 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+		// 2) Загрузить картинку из файла:
+		HBITMAP bmpButton_0 = (HBITMAP)LoadImage(NULL, "ButtonsBMP\\button_0.bmp", IMAGE_BITMAP, g_i_BUTTON_DOUBLE_SIZE, g_i_BUTTON_SIZE, LR_LOADFROMFILE  ); 
+		// 3) Установить картинку на кнопку
+		SendMessage(hButton_0, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton_0);
 		CreateWindowEx
 		(
 			NULL, "Button", ".",
@@ -182,6 +189,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+		SetSkin(hwnd, "square_blue");  // устанавливает в каждую кнопку соответствующую иконку
 	}
 	break;
 	case WM_COMMAND:
@@ -311,4 +319,8 @@ INT GetTitleBarHeight(HWND hwnd)
 	GetClientRect(hwnd, &client_rect);
 	INT title_bar_height = (window_rect.bottom - window_rect.top) - (client_rect.bottom - client_rect.top);
 	return title_bar_height;
+}
+VOID SetSkin(HWND hwnd, CONST CHAR skin[])
+{
+
 }
