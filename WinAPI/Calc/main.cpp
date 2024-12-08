@@ -191,6 +191,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		static WORD operation = 0;
 		static BOOL input = FALSE;
 		static BOOL operation_input = FALSE;
+	
 
 		SetFocus(hwnd); // без него не работает esc  чтобы всегда работала клава
 		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
@@ -200,7 +201,10 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
 		{
 			// if was input operation we need screen сбрасываем
-			if (operation_input)SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)"");
+			{
+				if (operation_input)SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)"");
+				operation_input = FALSE;  // чтобы вводились двузначные
+			}
 			sz_digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
 			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
 			if (strlen(sz_display) == 1 && sz_display[0] == '0')
@@ -240,7 +244,8 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
 			if (input && a == DBL_MIN) a = atof(sz_display);
 			//input = FALSE; // устанавливаем когда
-			if (operation)SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_EQUAL), 0);
+			if (operation && input)
+				SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_EQUAL), 0);
 			operation = LOWORD(wParam);
 			//прежде чем ввели новую операцию нужно выполнить старую
 			operation_input = TRUE;
