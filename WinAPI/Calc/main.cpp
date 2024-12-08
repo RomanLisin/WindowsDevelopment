@@ -2,6 +2,8 @@
 #include<Windows.h>
 #include"Resource.h"
 #include"Dimensions.h"
+#include<float.h>
+#include<cstdio>
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc_VPD_311";
 
@@ -142,7 +144,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (3 - i),*/
 				g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
 				hwnd,
-				(HMENU)IDC_BUTTON_PLUS + i,
+				(HMENU)(IDC_BUTTON_PLUS + i),  /// чтобы минус не работал как Backspace
 				GetModuleHandle(NULL),
 				NULL
 			);
@@ -184,6 +186,12 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	break;
 	case WM_COMMAND:
 	{
+		static DOUBLE a = DBL_MIN;
+		static DOUBLE b = DBL_MIN;
+		static WORD operation = 0;
+		static BOOL input = FALSE;
+		static BOOL operation_input = FALSE;
+
 		SetFocus(hwnd); // без него не работает esc  чтобы всегда работала клава
 		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
 		CONST INT SIZE = 256;
@@ -191,13 +199,17 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CHAR sz_digit[2]{};
 		if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
 		{
+			// if was input operation we need screen сбрасываем
+			if (operation_input)SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)"");
 			sz_digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
 			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
 			if (strlen(sz_display) == 1 && sz_display[0] == '0')
 				sz_display[0] = sz_digit[0];
 			else
 				strcat(sz_display, sz_digit);
-				SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+			input = TRUE;
+
 		}
 		if (LOWORD(wParam) == IDC_BUTTON_POINT)
 		{
@@ -217,9 +229,39 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		if (LOWORD(wParam) == IDC_BUTTON_CLR)
 		{
+			a = b = DBL_MIN;
+			operation = 0;
+			input = operation_input = FALSE;
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)"0");
 		}
-		
+		///////////////////////////////////////////////////    hard code    ////////////////////
+		if (LOWORD(wParam) >= IDC_BUTTON_PLUS && LOWORD(wParam) <= IDC_BUTTON_SLASH)
+		{
+			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
+			if (input && a == DBL_MIN) a = atof(sz_display);
+			//input = FALSE; // устанавливаем когда
+			if (operation)SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_EQUAL), 0);
+			operation = LOWORD(wParam);
+			//прежде чем ввели новую операцию нужно выполнить старую
+			operation_input = TRUE;
+		}
+		if (LOWORD(wParam) == IDC_BUTTON_EQUAL)
+		{
+			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
+			// для того, чтобы выполнить операцию нам надо считать сообщение с экрана
+			if (input) b = atof(sz_display);
+			input = FALSE;
+			switch (operation)
+			{
+			case IDC_BUTTON_PLUS: a += b; break;
+			case IDC_BUTTON_MINUS: a -= b; break;
+			case IDC_BUTTON_ASTER: a *= b; break;
+			case IDC_BUTTON_SLASH: a /= b; break;
+			}
+			operation_input = FALSE;
+			sprintf(sz_display, "%g", a);
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);  
+		}
 	}
 		break;
 	case WM_KEYDOWN:
