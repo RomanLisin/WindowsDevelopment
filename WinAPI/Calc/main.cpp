@@ -3,17 +3,20 @@
 #include"Resource.h"
 #include"Dimensions.h"
 #include<float.h>
-#include<cstdio>
-#include<filesystem>
+#include<regex>
+#include<iostream>
+#include<stdio.h>
+
+
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc_VPD_311";
 
 CONST CHAR* g_OPERATION[] = { "+" ,"-", "*","/" };
 
-CONST CHAR* square_blue[];//{"0","1","2","3","4","5","6","7","8","9","x","<-","C","=","-","+",".","/"}
+CONST CHAR* nonDigitButton[] = { "point","plus","minus","aster","slash","bsp","clr","equal" };
+//CHAR* skin[256]{};
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-//INT GetTitleBarHeight(HWND hwnd);
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
 
@@ -51,7 +54,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 		g_sz_WINDOW_CLASS,
 		WS_OVERLAPPEDWINDOW ^ WS_THICKFRAME ^ WS_MAXIMIZEBOX,
 		CW_USEDEFAULT, CW_USEDEFAULT,
-		g_i_WINDOW_WIDTH+16, g_i_WINDOW_HEIGHT +42,
+		g_i_WINDOW_WIDTH+16, g_i_WINDOW_HEIGHT +52,
 		NULL,
 		NULL,
 		hInstance,
@@ -127,10 +130,10 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 		// 2) Загрузить картинку из файла:
-		HBITMAP bmpButton_0 = (HBITMAP)LoadImage(NULL, "ButtonsBMP\\button_0.bmp", IMAGE_BITMAP, g_i_BUTTON_DOUBLE_SIZE, g_i_BUTTON_SIZE, LR_LOADFROMFILE  ); 
+		HBITMAP bmpButton_0 = (HBITMAP)LoadImage(NULL, "ButtonsBMP\\square_blue\\button_0.bmp", IMAGE_BITMAP, g_i_BUTTON_DOUBLE_SIZE, g_i_BUTTON_SIZE, LR_LOADFROMFILE  ); 
 		// 3) Установить картинку на кнопку
 		SendMessage(hButton_0, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton_0);
-		CreateWindowEx
+		HWND hButton_Point = CreateWindowEx
 		(
 			NULL, "Button", ".",
 			WS_CHILD | WS_VISIBLE | BS_BITMAP,
@@ -143,6 +146,10 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+		// 2) Загрузить картинку из файла:
+		HBITMAP bmpButton_Point = (HBITMAP)LoadImage(NULL, "ButtonsBMP\\square_blue\\button_point.bmp", IMAGE_BITMAP, g_i_BUTTON_DOUBLE_SIZE, g_i_BUTTON_SIZE, LR_LOADFROMFILE);
+		// 3) Установить картинку на кнопку
+		SendMessage(hButton_Point, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton_Point);
 		for (int i = 0; i < 4; i++)
 		{
 			CreateWindowEx
@@ -192,6 +199,10 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+		// 2) Загрузить картинку из файла:
+		bmpButton_0 = (HBITMAP)LoadImage(NULL, "ButtonsBMP\\button_0.bmp", IMAGE_BITMAP, g_i_BUTTON_DOUBLE_SIZE, g_i_BUTTON_SIZE, LR_LOADFROMFILE);
+		// 3) Установить картинку на кнопку
+		SendMessage(hButton_0, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton_0);
 		SetSkin(hwnd, "square_blue");  // устанавливает в каждую кнопку соответствующую иконку
 	}
 	break;
@@ -217,7 +228,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				if (operation_input || equal_pressed)SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)"");
 				operation_input = equal_pressed = FALSE;  // чтобы вводились двузначные
 			}
-			sz_digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
+			sz_digit[0] /*<- ASCII '49'*/ = LOWORD(wParam) /*(1000-1015) see resource.h*/ - IDC_BUTTON_0 /*1000*/ + '0' /*'48' ASCII*/;
 			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
 			if (strlen(sz_display) == 1 && sz_display[0] == '0')
 				sz_display[0] = sz_digit[0];
@@ -314,19 +325,95 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 
-INT GetTitleBarHeight(HWND hwnd)
-{
-	RECT window_rect;
-	RECT client_rect;
-	GetWindowRect(hwnd, &window_rect);
-	GetClientRect(hwnd, &client_rect);
-	INT title_bar_height = (window_rect.bottom - window_rect.top) - (client_rect.bottom - client_rect.top);
-	return title_bar_height;
-}
+
+//VOID SetSkin(HWND hwnd,CONST CHAR skin[])
+//{
+//	for (int i = IDC_BUTTON_0; i <= IDC_BUTTON_9; i++)
+//	{
+//		HWND hButton = GetDlgItem(hwnd, i);
+//		RECT rect;  // для получения размера кнопки
+//		int width, height;
+//		if (GetWindowRect(hButton, &rect))
+//		{
+//			width = rect.right - rect.left;
+//			height = rect.bottom - rect.top;
+//		}
+//		else std::cerr << "Get size button error" << std::endl;
+//		CONST INT SIZE = 256;
+//		CHAR currentDir[SIZE]; GetCurrentDirectory(SIZE, currentDir);
+//		CHAR sz_directoryPath[SIZE]{};
+//		// формируем путь в sz_directoryPath
+//		sprintf(sz_directoryPath, "ButtonsBPM\\%s\\button_%i.bmp", skin , (i - IDC_BUTTON_0));
+//		// 2) Загрузить картинку из файла:
+//		//MessageBox(hwnd, "currentDir", (LPSTR)GetCurrentDirectory(SIZE, currentDir), MB_OK);
+//		HBITMAP bmpButton = (HBITMAP)LoadImageA(NULL, sz_directoryPath, IMAGE_BITMAP, width, height, LR_LOADFROMFILE);
+//		//if (bmpButton == NULL) std::cerr << "Failed to load image: " << sz_directoryPath << std::endl;
+//		//continue;
+//		// 3) Установить картинку на кнопку
+//		SendMessage(hButton, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)bmpButton);
+//	}
+//}
+
 VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 {
-	// добавляем на каждую кнопку стиль BS_HBITMAP
-	// загрузить картинку из файла
-	// установить картинку на кнопку
+	CHAR sz_pathToFile[MAX_PATH]{};
+	for (int i = IDC_BUTTON_0; i <= IDC_BUTTON_EQUAL; i++)
+	{
+		HWND hButton = GetDlgItem(hwnd, i);
+		CHAR subTxtButton[256]{};
 
+		if (i > IDC_BUTTON_9)
+		{
+			int index = i - IDC_BUTTON_POINT;
+			if (index >= 0 && index < sizeof(nonDigitButton) / sizeof(nonDigitButton[0]))
+			{
+				sprintf(subTxtButton, "%s", nonDigitButton[index]);
+			}
+			else
+			{
+				std::cerr << "Index out of bounds for nonDigitButton array" << std::endl;
+				continue;
+			}
+		}
+		else
+		{
+			sprintf(subTxtButton, "%d", i - IDC_BUTTON_0);
+		}
+
+		RECT rect;
+		int width = 0, height = 0;
+		if (GetClientRect(hButton, &rect))
+		{
+			width = rect.right - rect.left;
+			height = rect.bottom - rect.top;
+		}
+		else
+		{
+			std::cerr << "Failed to get button size" << std::endl;
+			continue;
+		}
+
+		sprintf(sz_pathToFile, "ButtonsBMP\\%s\\button_%s.bmp", (LPSTR)skin, subTxtButton);
+
+		HANDLE hImage = LoadImage(
+			GetModuleHandle(NULL),
+			sz_pathToFile,
+			IMAGE_BITMAP,
+			width,
+			height,
+			LR_LOADFROMFILE
+		);
+
+		if (!hImage)
+		{
+			std::cerr << "Failed to load image: " << sz_pathToFile << std::endl;
+			continue;
+		}
+
+		HANDLE hOldImage = (HANDLE)SendMessage(hButton, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)hImage);
+		if (hOldImage)
+		{
+			DeleteObject(hOldImage);
+		}
+	}
 }

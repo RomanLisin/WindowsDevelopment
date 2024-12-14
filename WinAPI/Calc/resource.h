@@ -1,7 +1,10 @@
 //{{NO_DEPENDENCIES}}
 // Microsoft Visual C++ generated include file.
 // Used by Resource.rc
-//
+#include<iostream>
+#include<filesystem>
+#include<string>
+
 #define IDI_ICON1                       101
 
 #define IDC_EDIT_DISPLAY 999
