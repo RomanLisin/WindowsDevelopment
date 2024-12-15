@@ -546,10 +546,10 @@ VOID LoadCustomFont(HWND hwnd, CONST CHAR fontName[])
 	CHAR sz_pathToFile[MAX_PATH]{};
 	HWND hEdit = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
 	// Загружаем шрифт
-		if (g_hFont)
-		{
-			DeleteObject(g_hFont); // удаляем старый шрифт
-		}
+		//if (g_hFont)
+		//{
+		//	DeleteObject(g_hFont); // удаляем старый шрифт
+		//}
 	
 	//sprintf(sz_pathToFile,"Fonts\\%s\\%s.ttf", fontName, fontName);
 	std::string pathToFile = "C:\\Users\\rls\\source\\repos\\WindowsDevelopment\\WinAPI\\Calc\\Fonts\\";
@@ -559,7 +559,7 @@ VOID LoadCustomFont(HWND hwnd, CONST CHAR fontName[])
 
 	// Если нужно в char*
 	strcpy(sz_pathToFile, fullPath.c_str());
-	MessageBox(NULL, sz_pathToFile, "Path to Font", MB_OK);
+	//MessageBox(NULL, sz_pathToFile, "Path to Font", MB_OK);
 	if (AddFontResourceEx(sz_pathToFile, FR_PRIVATE, NULL) > 0)
 	{
 		// Создаем шрифт
@@ -584,10 +584,10 @@ VOID LoadCustomFont(HWND hwnd, CONST CHAR fontName[])
 		// Устанавливаем шрифт в edit-панель
 		SendMessage(hEdit, WM_SETFONT, (WPARAM)g_hFont, TRUE);
 	}
-	else 
-	{
+	//else 
+	/*{
 		MessageBox(NULL, "Не удалось загрузить шрифт", "Ошибка", MB_OK | MB_ICONERROR);
-	}
+	}*/
 }
 VOID CleanupFont()
 {
