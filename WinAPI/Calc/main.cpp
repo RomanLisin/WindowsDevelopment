@@ -4,7 +4,7 @@
 #include"Dimensions.h"
 #include<float.h>
 #include<cstdio>
-
+#include"Colors.h"
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc_VPD_311";
 
 CONST CHAR* g_OPERATION[] = { "+" ,"-", "*","/" };
@@ -70,7 +70,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 }
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	
+	static INT index = 0;
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -192,6 +192,22 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SetSkin(hwnd, "square_blue");  // устанавливает в каждую кнопку соответствующую иконку
 	}
 	break;
+	case WM_CTLCOLOREDIT:
+	{ // здесь нужно получить контекст устройства для дисплея калькулятора
+		HDC hdcEdit = (HDC)wParam;
+		SetBkMode(hdcEdit, OPAQUE);
+		SetBkColor(hdcEdit, g_DISPLAY_BACKGROUND_COLLOR[index]);
+		SetTextColor(hdcEdit, g_DISPLAY_FOREGROUND_COLLOR[index]);
+		// для того чтобы задать цвет окна
+		HBRUSH hbrBackground = CreateSolidBrush(g_WINDOW_BACKGROUND_COLLOR[index]);
+		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND,(LONG)hbrBackground);
+		SendMessage(hwnd, WM_ERASEBKGND, wParam /*(WPARAM)hdcEdit*/, 0);
+		//UpdateWindow(hwnd);
+		//SetSkin(hwnd, g_SKIN[index]);
+		RedrawWindow(hwnd, NULL, NULL, RDW_ERASE);  //  кнопки не сбрасываются
+		return (LRESULT)CreateSolidBrush(RGB(0, 0, 0)); 
+	}
+	break;
 	case WM_COMMAND:
 	{
 		static DOUBLE a = DBL_MIN;
@@ -277,6 +293,9 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			equal_pressed = TRUE;
 			sprintf(sz_display, "%g", a);
 			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+			/*InvalidateRect(hwnd, NULL, TRUE);
+			UpdateWindow(hwnd);*/
+			
 		}
 	}
 	break;
@@ -397,14 +416,22 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_METAL_MISTRAL, "Metal mistral");
 		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_SQUARE_BLUE, "Square blue");
 		//3) использование контекстного меню
-		switch (TrackPopupMenu(hMenu, TPM_RETURNCMD /*будет возвращать id ресурса выбранного пункта*/ | TPM_RIGHTALIGN | TPM_BOTTOMALIGN,LOWORD(lParam), HIWORD(lParam), 0, hwnd, NULL))
+		DWORD item = TrackPopupMenu(hMenu, TPM_RETURNCMD /*будет возвращать id ресурса выбранного пункта*/ | TPM_RIGHTALIGN | TPM_BOTTOMALIGN, LOWORD(lParam), HIWORD(lParam), 0, hwnd, NULL);// -IDR_METAL_MISTRAL;
+		switch (item)
 		{
-		case IDR_SQUARE_BLUE: SetSkin(hwnd, "square_blue"); break;
-		case IDR_METAL_MISTRAL: SetSkin(hwnd, "metal_mistral"); break;
+		case IDR_SQUARE_BLUE:	//SetSkin(hwnd, "square_blue"); break;
+		case IDR_METAL_MISTRAL: //SetSkin(hwnd, "metal_mistral"); break;
+			index = item - IDR_SQUARE_BLUE;
+			break;
 		case IDR_EXIT:			SendMessage(hwnd, WM_CLOSE, 0, 0); break;
 
 		}
-
+		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+		HDC hdcDisplay = GetDC(hEditDisplay);
+		SendMessage(hwnd, WM_CTLCOLOREDIT, (WPARAM)hdcDisplay, 0);
+		ReleaseDC(hEditDisplay, hdcDisplay);
+		SetSkin(hwnd, g_SKIN[index]);
+		SetFocus(hEditDisplay);
 		//4) удаляем меню
 		DestroyMenu(hMenu);
 	}
