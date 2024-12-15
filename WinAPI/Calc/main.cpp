@@ -3,7 +3,6 @@
 #include"Resource.h"
 #include"Dimensions.h"
 #include<float.h>
-#include<regex>
 #include<iostream>
 #include<stdio.h>
 
@@ -15,10 +14,23 @@ CONST CHAR* g_OPERATION[] = { "+" ,"-", "*","/" };
 
 CONST CHAR* nonDigitButton[] = { "point","plus","minus","aster","slash","bsp","clr","equal" };
 //CHAR* skin[256]{};
+HFONT g_hFont = NULL;
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
+VOID LoadCustomFont(HWND hwnd, CONST CHAR skin[]);
+VOID CleanupFont();
+
+enum COLOR { BLUE, YELLOW, GRЕY };
+enum ELEMENT { BACKGROUND, SCREEN, TEXT };
+HFONT g_Font = NULL;
+CONST COLORREF g_COLORS[][3] =
+{
+	{ RGB(145, 37, 201), RGB(0, 188, 213), RGB(1, 1, 1) }, // square blue
+	{ RGB(90, 139, 153), RGB(50, 100, 0), RGB(0, 255, 50) },
+	{ RGB(135, 132, 123), RGB(209, 244, 0) /*экран метал*/, RGB(1, 1, 1)}
+};
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -76,11 +88,15 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 }
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	
+	static CONST CHAR font[] = "light_led_display-7";
+	static COLOR color = COLOR::YELLOW;
+	static HMENU hMenuMain, hMenuEdit;
+
 	switch (uMsg)
 	{
 	case WM_CREATE:
 	{
+		HINSTANCE hInstance = (HINSTANCE)GetWindowLong(hwnd, GWL_HINSTANCE);
 		HWND hEdit = CreateWindowEx
 		(
 			NULL, "Edit", "0",
@@ -92,25 +108,49 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
+		if (g_hFont)
+		{
+			DeleteObject(g_hFont); // удаляем старый шрифт
+		}
+		g_hFont = CreateFont
+		(
+			g_i_FONT_SIZE,                // высота символов
+			0,                       // ширина символов
+			0,                       // угол ориентации
+			0,                       // угол начертания
+			FW_NORMAL,               //	толщина шрифта
+			FALSE,                   // курсив
+			FALSE,                   // подчеркивание
+			FALSE,                   // зачеркивание
+			DEFAULT_CHARSET,         // набор символов
+			OUT_DEFAULT_PRECIS,      // точность вывода
+			CLIP_DEFAULT_PRECIS,     // точность отсеченияd
+			DEFAULT_QUALITY,         // качество вывода
+			DEFAULT_PITCH | FF_SWISS,// шаг шрифта и семейство
+			"light_led_display-7"                  // имя шрифта
+		);
+		SendMessage(hEdit, WM_SETFONT, (WPARAM)g_hFont, TRUE);
+		LoadCustomFont(hwnd, "light_led_display-7");
+
 		CHAR sz_digit[2] = {};
 		for (int i = 6; i >= 0; i -= 3)  //отвечает за ряды кнопок сверху вниз ,  i равнo : 6, 3, 0. Это три ряда(3 строки).
 		{
 			for (int j = 0; j < 3; j++) //отвечает за кнопки в одном ряду слева направо,j равнo : 0, 1, 2. Это три кнопки в строке
 			{
-				sz_digit[0] = i + j+'1'; // создаёт текст кнопки
+				sz_digit[0] = i + j + '1'; // создаёт текст кнопки
 				/*	i + j — порядковый номер кнопки(0, 1, 2 и так далее)
 					'1' — добавление, чтобы сдвинуть номера в диапазон '1' — '9'
 					первая кнопка (i = 6, j = 0) : sz_digit[0] = 6 + 0 + '1' = '7'
 					вторая кнопка (i = 6, j = 1) : sz_digit[0] = 6 + 1 + '1' = '8' и т.д. */
 				CreateWindowEx
 				(
-					NULL, "Button",sz_digit,
+					NULL, "Button", sz_digit,
 					WS_CHILD | WS_VISIBLE | BS_BITMAP,
 					g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * j,
-					g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (2 - i/3),
+					g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (2 - i / 3),
 					g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
 					hwnd,
-					(HMENU)(IDC_BUTTON_1 + i+j),  //ID дочернего окна позиция кнопки по горизонтали зависит от j (индекс в ряду)
+					(HMENU)(IDC_BUTTON_1 + i + j),  //ID дочернего окна позиция кнопки по горизонтали зависит от j (индекс в ряду)
 					GetModuleHandle(NULL),				// позиция кнопки по вертикали зависит от i (номера ряда)
 					NULL
 				);
@@ -130,7 +170,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 		// 2) Загрузить картинку из файла:
-		HBITMAP bmpButton_0 = (HBITMAP)LoadImage(NULL, "ButtonsBMP\\square_blue\\button_0.bmp", IMAGE_BITMAP, g_i_BUTTON_DOUBLE_SIZE, g_i_BUTTON_SIZE, LR_LOADFROMFILE  ); 
+		HBITMAP bmpButton_0 = (HBITMAP)LoadImage(NULL, "ButtonsBMP\\square_blue\\button_0.bmp", IMAGE_BITMAP, g_i_BUTTON_DOUBLE_SIZE, g_i_BUTTON_SIZE, LR_LOADFROMFILE);
 		// 3) Установить картинку на кнопку
 		SendMessage(hButton_0, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton_0);
 		HWND hButton_Point = CreateWindowEx
@@ -156,7 +196,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			(
 				NULL, "Button", g_OPERATION[i],
 				WS_CHILD | WS_VISIBLE | BS_BITMAP,
-				BUTTON_SHIFT_X(3), BUTTON_SHIFT_Y(3-i),
+				BUTTON_SHIFT_X(3), BUTTON_SHIFT_Y(3 - i),
 				/*g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) * 3,
 				g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (3 - i),*/
 				g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
@@ -169,7 +209,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		CreateWindowEx
 		(
 			NULL, "Button", "<-",
-			WS_CHILD | WS_VISIBLE | BS_BITMAP, 
+			WS_CHILD | WS_VISIBLE | BS_BITMAP,
 			BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(0),
 			g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
 			hwnd,
@@ -192,7 +232,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		(
 			NULL, "Button", "=",
 			WS_CHILD | WS_VISIBLE | BS_BITMAP,
-			BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(2),  
+			BUTTON_SHIFT_X(4), BUTTON_SHIFT_Y(2),
 			g_i_BUTTON_SIZE, g_i_BUTTON_DOUBLE_SIZE,
 			hwnd,
 			(HMENU)IDC_BUTTON_EQUAL,
@@ -204,7 +244,10 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		// 3) Установить картинку на кнопку
 		SendMessage(hButton_0, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton_0);
 		SetSkin(hwnd, "square_blue");  // устанавливает в каждую кнопку соответствующую иконку
-	}
+	
+		hMenuMain = LoadMenu(hInstance, "MenuMain");
+		SetMenu(hwnd, hMenuMain);
+}
 	break;
 	case WM_COMMAND:
 	{
@@ -214,7 +257,17 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		static BOOL input = FALSE;
 		static BOOL operation_input = FALSE;
 		static BOOL equal_pressed = FALSE;
-	
+
+		// обработка команд меню, смена цветовой схемы
+		switch (LOWORD(wParam))
+		{
+		case CM_SQUARE_BLUE:
+			color = BLUE;
+			break;
+		case CM_SQUARE_YELLOW:
+			color = YELLOW;
+			break;
+		}
 
 		SetFocus(hwnd); // без него не работает esc,  чтобы всегда работала клава
 		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
@@ -242,8 +295,8 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);//cчитываем содержимое экрана
 			if (strchr(sz_display, '.'))break; // чтобы точку можно было поставить только одну
-				strcat(sz_display, ".");
-				SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+			strcat(sz_display, ".");
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 		}
 		if (LOWORD(wParam) == IDC_BUTTON_BSP)
 		{
@@ -290,10 +343,13 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			operation_input = FALSE;
 			equal_pressed = TRUE;
 			sprintf(sz_display, "%g", a);
-			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);  
+			SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 		}
+		// принудительная перерисовка окна
+		InvalidateRect(hwnd, NULL, TRUE);
+		UpdateWindow(hwnd);
 	}
-		break;
+	break;
 	case WM_KEYDOWN:
 	{
 		if (wParam >= '0' && wParam <= '9')
@@ -306,15 +362,112 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		}
 		switch (wParam)
 		{
-	
+
 		case VK_OEM_PERIOD: // SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_POINT), 0); break;  // точка , которая возле буквы Ю   // от разных кейсов может обрабатывать один и тот же код
 		case VK_DECIMAL: SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_POINT), 0); break;  // точка , которая NUMPAD
 		case VK_BACK: SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_BSP), 0); break;
 		case VK_ESCAPE:SendMessage(hwnd, WM_COMMAND, LOWORD(IDC_BUTTON_CLR), 0); break;
 		}
 	}
-		break;
+	break;
+	case WM_ERASEBKGND:
+	{
+		HDC hdc = (HDC)wParam;
+		//получаем размеры клиентской области
+		RECT rect;
+		GetClientRect(hwnd, &rect);
+		// создаем кисть для фона
+		HBRUSH hBrush = CreateSolidBrush(g_COLORS[color][ELEMENT::BACKGROUND]);
+		SetClassLongPtr(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBrush);
+		// используем кисть для заполнения фона
+		FillRect(hdc, &rect, hBrush);
+		// deleteObject(hBrush);
+
+		return 1;
+	}
+	break;
+	case WM_CTLCOLOREDIT:
+	{
+		HDC hdc = (HDC)wParam;
+		// Установка параметров фона и текста
+		SetBkMode(hdc, OPAQUE);
+		SetBkColor(hdc, g_COLORS[color][ELEMENT::SCREEN]);
+		SetTextColor(hdc, g_COLORS[color][ELEMENT::TEXT]);
+		return 0;
+	}
+	break;
+	case WM_CONTEXTMENU:
+	{
+		HMENU hMainMenu = CreatePopupMenu();
+		HMENU hSubMenu = CreatePopupMenu();
+		HMENU hFontMenu = CreatePopupMenu();
+
+		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_STRING, CM_EXIT, "Exit");
+		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_STRING, 0, NULL);
+		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hFontMenu, "Fonts");
+		InsertMenu(hMainMenu, 0, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hSubMenu, "Skins");
+
+		InsertMenu(hSubMenu, 0, MF_BYPOSITION | MF_STRING, 0, "New model");
+		InsertMenu(hSubMenu, 0, MF_BYPOSITION | MF_STRING, 0, "Metal mistral");
+		InsertMenu(hSubMenu, 0, MF_BYPOSITION | MF_STRING, 0, "Square blue");
+
+		InsertMenu(hFontMenu, 0, MF_BYPOSITION | MF_STRING, CM_FONT_DIGITGRAF, "Digit graf");
+		InsertMenu(hFontMenu, 0, MF_BYPOSITION | MF_STRING, CM_FONT_LIGHTLED, "Light led");
+
+		switch
+			(
+				TrackPopupMenuEx
+				(
+					hMainMenu, TPM_BOTTOMALIGN | TPM_LEFTALIGN | TPM_RETURNCMD,
+					LOWORD(lParam), HIWORD(lParam),
+					hwnd,
+					NULL
+				)
+				)
+		{
+		case CM_FONT_DIGITGRAF:
+			LoadCustomFont(hwnd, "01-digitgraphics");
+			break;
+		case CM_FONT_LIGHTLED:
+			LoadCustomFont(hwnd, "light-led-display-7");
+			break;
+		case CM_EXIT:
+			DestroyWindow(hwnd);
+			break;
+		case CM_SQUARE_BLUE:
+		{
+			SetSkin(hwnd, "square_blue");
+			color = BLUE;
+			break;
+		}
+		case CM_METAL_MISTRAL:
+		{
+			SetSkin(hwnd, "metal_mistral");
+			color = GRЕY;
+		}
+			break;
+		case CM_NEW_MODEL:
+			color = YELLOW;
+			break;
+		}
+
+		HDC hdc = GetDC(hwnd);
+		HDC hdcEdit = GetDC(GetDlgItem(hwnd, IDC_EDIT_DISPLAY));
+
+		SendMessage(hwnd, WM_CTLCOLOREDIT, (WPARAM)hdcEdit, 0);
+
+		ReleaseDC(hwnd, hdcEdit);
+		ReleaseDC(hwnd, hdc);
+
+		CHAR sz_buffer[MAX_PATH]{};
+
+		SendMessage(GetDlgItem(hwnd, IDC_EDIT_DISPLAY), WM_GETTEXT, MAX_PATH, (LPARAM)sz_buffer);
+		SendMessage(GetDlgItem(hwnd, IDC_EDIT_DISPLAY), WM_SETTEXT, 0, (LPARAM)sz_buffer);
+
+	}
+	break;
 	case WM_DESTROY:
+		CleanupFont();
 		PostQuitMessage(0);
 		break;
 	case WM_CLOSE:
@@ -324,35 +477,6 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 	return FALSE;
 }
-
-
-//VOID SetSkin(HWND hwnd,CONST CHAR skin[])
-//{
-//	for (int i = IDC_BUTTON_0; i <= IDC_BUTTON_9; i++)
-//	{
-//		HWND hButton = GetDlgItem(hwnd, i);
-//		RECT rect;  // для получения размера кнопки
-//		int width, height;
-//		if (GetWindowRect(hButton, &rect))
-//		{
-//			width = rect.right - rect.left;
-//			height = rect.bottom - rect.top;
-//		}
-//		else std::cerr << "Get size button error" << std::endl;
-//		CONST INT SIZE = 256;
-//		CHAR currentDir[SIZE]; GetCurrentDirectory(SIZE, currentDir);
-//		CHAR sz_directoryPath[SIZE]{};
-//		// формируем путь в sz_directoryPath
-//		sprintf(sz_directoryPath, "ButtonsBPM\\%s\\button_%i.bmp", skin , (i - IDC_BUTTON_0));
-//		// 2) Загрузить картинку из файла:
-//		//MessageBox(hwnd, "currentDir", (LPSTR)GetCurrentDirectory(SIZE, currentDir), MB_OK);
-//		HBITMAP bmpButton = (HBITMAP)LoadImageA(NULL, sz_directoryPath, IMAGE_BITMAP, width, height, LR_LOADFROMFILE);
-//		//if (bmpButton == NULL) std::cerr << "Failed to load image: " << sz_directoryPath << std::endl;
-//		//continue;
-//		// 3) Установить картинку на кнопку
-//		SendMessage(hButton, BM_SETIMAGE, (WPARAM)IMAGE_BITMAP, (LPARAM)bmpButton);
-//	}
-//}
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 {
@@ -415,5 +539,61 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 		{
 			DeleteObject(hOldImage);
 		}
+	}
+}
+VOID LoadCustomFont(HWND hwnd, CONST CHAR fontName[])
+{	
+	CHAR sz_pathToFile[MAX_PATH]{};
+	HWND hEdit = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+	// Загружаем шрифт
+		if (g_hFont)
+		{
+			DeleteObject(g_hFont); // удаляем старый шрифт
+		}
+	
+	//sprintf(sz_pathToFile,"Fonts\\%s\\%s.ttf", fontName, fontName);
+	std::string pathToFile = "C:\\Users\\rls\\source\\repos\\WindowsDevelopment\\WinAPI\\Calc\\Fonts\\";
+	//std::string fontName = "Arial"; // Пример имени шрифта
+
+	std::string fullPath = pathToFile + fontName + "\\" + fontName + ".ttf";
+
+	// Если нужно в char*
+	strcpy(sz_pathToFile, fullPath.c_str());
+	MessageBox(NULL, sz_pathToFile, "Path to Font", MB_OK);
+	if (AddFontResourceEx(sz_pathToFile, FR_PRIVATE, NULL) > 0)
+	{
+		// Создаем шрифт
+		g_hFont = CreateFont
+		(
+			g_i_FONT_SIZE,                // Высота шрифта
+			0,                 // Ширина шрифта (автоматическая)
+			0,                 // Угол наклона
+			0,                 // Ориентация
+			FW_NORMAL,         // Толщина
+			FALSE,             // Курсив
+			FALSE,             // Подчеркивание
+			FALSE,             // Зачеркнутый
+			DEFAULT_CHARSET,   // Набор символов
+			OUT_DEFAULT_PRECIS,// Точность вывода
+			CLIP_DEFAULT_PRECIS,// Точность отсечения
+			DEFAULT_QUALITY,   // Качество
+			DEFAULT_PITCH | FF_DONTCARE, // Шаг шрифта
+			(LPSTR)fontName  // Имя шрифта
+		);
+
+		// Устанавливаем шрифт в edit-панель
+		SendMessage(hEdit, WM_SETFONT, (WPARAM)g_hFont, TRUE);
+	}
+	else 
+	{
+		MessageBox(NULL, "Не удалось загрузить шрифт", "Ошибка", MB_OK | MB_ICONERROR);
+	}
+}
+VOID CleanupFont()
+{
+	if (g_hFont) 
+	{
+		DeleteObject(g_hFont);
+		g_hFont = NULL;
 	}
 }
