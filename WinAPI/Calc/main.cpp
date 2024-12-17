@@ -13,9 +13,12 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 //INT GetTitleBarHeight(HWND hwnd);
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
+VOID SetFont(HWND hwnd, CONST CHAR font[]);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
+	static HFONT hFont = {};
+
 	//1) Регистрация класса окна
 	WNDCLASSEX wClass;
 	ZeroMemory(&wClass, sizeof(wClass));  // Зануляем
@@ -71,6 +74,7 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static INT index = 0;
+	static HFONT hFont = {};
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -87,20 +91,24 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 		AddFontResource("Fonts\\light-led-display-7.ttf");
-		HFONT hFont = CreateFont
+		hFont = CreateFont
 		(
 			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
 			0,0,
 			FW_MEDIUM, 0,0,0,
 			ANSI_CHARSET,
-			OUT_CHARACTER_PRECIS,
-			CLIP_CHARACTER_PRECIS,
-			ANTIALIASED_QUALITY,
-			FF_DONTCARE	,
+			DEFAULT_CHARSET,//OUT_CHARACTER_PRECIS,
+			OUT_DEFAULT_PRECIS,//CLIP_CHARACTER_PRECIS,
+			DEFAULT_QUALITY,//ANTIALIASED_QUALITY,
+			DEFAULT_PITCH | FF_SWISS,//FF_DONTCARE	,
 			"light-led-display-7"
 		);
 		SendMessage(hEdit, WM_SETFONT, (LPARAM)hFont, TRUE);
+		
+		SetFont(hwnd, "MOSCOW2024");
+		SetFont(hwnd, "light-led-display-7");
 
+		
 		CHAR sz_digit[2] = {};
 		for (int i = 6; i >= 0; i -= 3)  //отвечает за ряды кнопок сверху вниз ,  i равнo : 6, 3, 0. Это три ряда(3 строки).
 		{
@@ -455,7 +463,13 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 		break;
 	case WM_DESTROY:
+	{
+		if (hFont)
+		{
+			DeleteObject(hFont);
+		}
 		PostQuitMessage(0);
+	}
 		break;
 	case WM_CLOSE:
 		DestroyWindow(hwnd);
