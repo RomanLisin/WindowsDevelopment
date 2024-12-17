@@ -8,6 +8,11 @@
 #define IDR_SQUARE_BLUE		201
 #define IDR_METAL_MISTRAL	202
 
+////////////////////////////////////////////
+#define IDR_FONT_MSK		250
+#define IDR_FONT_DIGITGRAPH	251
+#define IDR_FONT_LIGHTLED	252
+
 #define IDR_EXIT			299
 ////////////////////////////////////////////
 

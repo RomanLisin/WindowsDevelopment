@@ -15,6 +15,13 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
 VOID SetFont(HWND hwnd, CONST CHAR font[]);
 
+CONST CHAR* g_FONT[] =
+{
+	"MOSCOW2024",
+	"light-led-display-7",
+	"01-digitgraphics"
+};
+
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
 	static HFONT hFont = {};
@@ -104,10 +111,6 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			"light-led-display-7"
 		);
 		SendMessage(hEdit, WM_SETFONT, (LPARAM)hFont, TRUE);
-		
-		SetFont(hwnd, "MOSCOW2024");
-		SetFont(hwnd, "light-led-display-7");
-
 		
 		CHAR sz_digit[2] = {};
 		for (int i = 6; i >= 0; i -= 3)  //отвечает за ряды кнопок сверху вниз ,  i равнo : 6, 3, 0. Это три ряда(3 строки).
@@ -319,6 +322,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			/*InvalidateRect(hwnd, NULL, TRUE);
 			UpdateWindow(hwnd);*/
 			
+			
 		}
 	}
 	break;
@@ -436,9 +440,14 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//2) добавляем пункты в созданное меню
 		InsertMenu(hMenu, 0 /*stack principle*/, MF_BYPOSITION | MF_STRING, IDR_EXIT, "Exit");
 		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
+		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_FONT_LIGHTLED, "Light led");
+		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_FONT_DIGITGRAPH, "Digit graph");
+		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_FONT_MSK, "MSK 2024");
+		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
 		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_METAL_MISTRAL, "Metal mistral");
 		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_SQUARE_BLUE, "Square blue");
 		CheckMenuItem(hMenu, index, MF_BYPOSITION | MF_CHECKED);
+
 		//3) использование контекстного меню
 		DWORD item = TrackPopupMenu(hMenu, TPM_RETURNCMD /*будет возвращать id ресурса выбранного пункта*/ | TPM_RIGHTALIGN | TPM_BOTTOMALIGN, LOWORD(lParam), HIWORD(lParam), 0, hwnd, NULL);// -IDR_METAL_MISTRAL;
 		switch (item)
@@ -449,6 +458,17 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			//SendMessage(GetDlgItem(hwnd, item), )
 			//ModifyMenu(hMenu, item - IDR_SQUARE_BLUE, MF_BYPOSITION | MF_CHECKED | MF_STRING, item, NULL);
 			break;
+		case IDR_FONT_MSK: // SetFont(hwnd, "MOSCOW2024");
+		case IDR_FONT_DIGITGRAPH:  // SetFont(hwnd, "light-led-display-7");
+		case IDR_FONT_LIGHTLED: // SetFont(hwnd, "01-digitgraphics");
+		{
+			index = item - IDR_FONT_MSK;
+			/*SendMessage(GetDlgItem(hwnd, item),);
+			ModifyMenu(hMenu, item - IDR_FONT_MSK, MF_BYPOSITION | MF_CHECKED | MF_STRING, item, NULL);*/
+			SetFont(hwnd, g_FONT[index]);
+			//RedrawWindow(hwnd, NULL, NULL, RDW_ERASE);
+		}
+			break;
 		case IDR_EXIT:			SendMessage(hwnd, WM_CLOSE, 0, 0); break;
 
 		}
@@ -456,7 +476,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HDC hdcDisplay = GetDC(hEditDisplay);
 		SendMessage(hwnd, WM_CTLCOLOREDIT, (WPARAM)hdcDisplay, 0);
 		ReleaseDC(hEditDisplay, hdcDisplay);
-		SetSkin(hwnd, g_SKIN[index]);
+		if (index > IDC_EDIT_DISPLAY)SetSkin(hwnd, g_SKIN[index]);
 		SetFocus(hEditDisplay);
 		//4) удаляем меню
 		DestroyMenu(hMenu);
@@ -509,14 +529,15 @@ CONST CHAR* g_BUTTONS[] =
 	"button_clr.bmp",
 	"button_equal.bmp"
 };
+
 VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 {
 	CHAR sz_filename[MAX_PATH]{};
 	for (int i = IDC_BUTTON_0; i <= IDC_BUTTON_EQUAL; i++)
 	{
-		HWND hButton = GetDlgItem(hwnd, i);
+		HWND hButton = GetDlgItem(hwnd, i); //Получает дескрипторы кнопок
 		sprintf(sz_filename, "ButtonsBMP\\%s\\%s", skin, g_BUTTONS[i - IDC_BUTTON_0]);
-		HBITMAP bmpButton = (HBITMAP)LoadImage
+		HBITMAP bmpButton = (HBITMAP)LoadImage //Загружает изображения для кнопок
 		(
 			NULL, sz_filename, 
 			IMAGE_BITMAP,
@@ -525,15 +546,16 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 			LR_LOADFROMFILE
 
 			);
-		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton);
+		//Устанавливает изображения кнопок 
+		SendMessage(hButton, BM_SETIMAGE , IMAGE_BITMAP /*тип изображения*/, (LPARAM)bmpButton /*дескриптор загруженного изображения*/);
 	}
 }
 VOID SetFont(HWND hwnd, CONST CHAR font[])
 {
 	CHAR sz_filePath[MAX_PATH]{};
 	sprintf(sz_filePath, "Fonts\\%s\\%s.ttf", font, font);
-	AddFontResource(sz_filePath);
-	HFONT hFont = CreateFont
+	AddFontResource(sz_filePath);  //Загружает шрифт 
+	HFONT hFont = CreateFont		//Создаёт шрифт
 	(
 		g_i_FONT_HEIGHT,                // высота символов
 		g_i_FONT_WIDTH,                       // ширина символов
@@ -550,5 +572,15 @@ VOID SetFont(HWND hwnd, CONST CHAR font[])
 		DEFAULT_PITCH | FF_SWISS,// шаг шрифта и семейство
 		font                  // имя шрифта
 	);
-	SendMessage(GetDlgItem(hwnd, IDC_EDIT_DISPLAY), WM_SETFONT, (LPARAM)hFont, TRUE);
+	//Устанавливаем шрифт для элемента управления(IDC_EDIT_DISPLAY) с помощью SendMessage с сообщением WM_SETFONT
+	/*Сообщения, которые отправляются :
+
+		WM_SETFONT: Устанавливает шрифт для элемента управления.
+		Параметры :
+		wParam = (WPARAM)hFont(дескриптор шрифта).
+		lParam = TRUE(обновить окно для немедленного применения шрифта).*/
+	HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY); /*Получает дескриптор дисплея*/
+	SendMessage (hEditDisplay, WM_SETFONT, (LPARAM)hFont, TRUE);
+	RedrawWindow(hEditDisplay, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+	//RedrawWindow и комбинация InvalidateRect + UpdateWindow выполняют одинаковую задачу, но RedrawWindow дает больше контроля над процессом
 }
