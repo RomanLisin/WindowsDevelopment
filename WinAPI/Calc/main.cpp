@@ -514,3 +514,27 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton);
 	}
 }
+VOID SetFont(HWND hwnd, CONST CHAR font[])
+{
+	CHAR sz_filePath[MAX_PATH]{};
+	sprintf(sz_filePath, "Fonts\\%s\\%s.ttf", font, font);
+	AddFontResource(sz_filePath);
+	HFONT hFont = CreateFont
+	(
+		g_i_FONT_HEIGHT,                // высота символов
+		g_i_FONT_WIDTH,                       // ширина символов
+		0,                       // угол ориентации
+		0,                       // угол начертания
+		FW_NORMAL,               //	толщина шрифта
+		FALSE,                   // курсив
+		FALSE,                   // подчеркивание
+		FALSE,                   // зачеркивание
+		DEFAULT_CHARSET,         // набор символов
+		OUT_DEFAULT_PRECIS,      // точность вывода
+		CLIP_DEFAULT_PRECIS,     // точность отсеченияd
+		DEFAULT_QUALITY,         // качество вывода
+		DEFAULT_PITCH | FF_SWISS,// шаг шрифта и семейство
+		font                  // имя шрифта
+	);
+	SendMessage(GetDlgItem(hwnd, IDC_EDIT_DISPLAY), WM_SETFONT, (LPARAM)hFont, TRUE);
+}
