@@ -71,7 +71,10 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 }
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+	
 	static INT index = 0;
+	static HMODULE hFontsModule = NULL;
+
 	switch (uMsg)
 	{
 	case WM_CREATE:
@@ -87,7 +90,16 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
-		AddFontResource("Fonts\\light-led-display-7.ttf");
+
+		hFontsModule = LoadLibrary("Fonts.dll");
+		HRSRC hFntRes = FindResource(hFontsModule, MAKEINTRESOURCE(2001), MAKEINTRESOURCE(RT_FONT));
+		HGLOBAL hFntMem = LoadResource(hFontsModule, hFntRes); // загружаем Font прям в оперативную память
+		VOID* fntData = LockResource(hFntMem);// далее его нужно заблокировать
+		DWORD nFonts = 0;
+		DWORD len = SizeofResource(hFontsModule, hFntRes);
+		AddFontMemResourceEx(fntData, len, NULL, &nFonts);
+
+		//AddFontResource("Fonts\\light-led-display-7.ttf");
 		HFONT hFont = CreateFont
 		(
 			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
@@ -98,9 +110,9 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CLIP_CHARACTER_PRECIS,
 			ANTIALIASED_QUALITY,
 			FF_DONTCARE	,
-			"light-led-display-7"
+			"MOSCOW2024"  // нужно прописывать имя шрифта, а не файла
 		);
-		SendMessage(hEdit, WM_SETFONT, (LPARAM)hFont, TRUE);
+		SendMessage(hEdit, WM_SETFONT, (LPARAM)hFontsModule, TRUE);
 
 		CHAR sz_digit[2] = {};
 		for (int i = 6; i >= 0; i -= 3)  //отвечает за ряды кнопок сверху вниз ,  i равнo : 6, 3, 0. Это три ряда(3 строки).
@@ -458,6 +470,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	}
 		break;
 	case WM_DESTROY:
+		FreeLibrary(hFontsModule);
 		PostQuitMessage(0);
 		break;
 	case WM_CLOSE:
