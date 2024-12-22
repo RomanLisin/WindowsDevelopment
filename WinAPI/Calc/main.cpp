@@ -13,6 +13,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 //INT GetTitleBarHeight(HWND hwnd);
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
+VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[]);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -204,7 +205,9 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			GetModuleHandle(NULL),
 			NULL
 		);
-		SetSkin(hwnd, "square_blue");  // устанавливает в каждую кнопку соответствующую иконку
+		//SetSkin(hwnd, "square_blue");  // устанавливает в каждую кнопку соответствующую иконку
+		SetSkinFromDLL(hwnd, "square_blue.dll");  // устанавливает в каждую кнопку соответствующую иконку
+
 	}
 	break;
 	case WM_CTLCOLOREDIT:
@@ -448,7 +451,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HDC hdcDisplay = GetDC(hEditDisplay);
 		SendMessage(hwnd, WM_CTLCOLOREDIT, (WPARAM)hdcDisplay, 0);
 		ReleaseDC(hEditDisplay, hdcDisplay);
-		SetSkin(hwnd, g_SKIN[index]);
+		SetSkinFromDLL(hwnd, g_SKIN[index]);
 		SetFocus(hEditDisplay);
 		//4) удаляем меню
 		DestroyMenu(hMenu);
@@ -513,4 +516,26 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 			);
 		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton);
 	}
+}
+
+VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[])
+{
+	HMODULE hModule = LoadLibrary(skin);
+
+	for (int i = IDC_BUTTON_0; i <= IDC_BUTTON_EQUAL; i++)
+	{
+		HWND hButton = GetDlgItem(hwnd, i);
+		HBITMAP bmpButton = (HBITMAP)LoadImage
+		(
+			hModule,
+			MAKEINTRESOURCE(i),
+			IMAGE_BITMAP,
+			i == IDC_BUTTON_0 ? g_i_BUTTON_DOUBLE_SIZE : g_i_BUTTON_SIZE,
+			i == IDC_BUTTON_EQUAL ? g_i_BUTTON_DOUBLE_SIZE : g_i_BUTTON_SIZE,
+			LR_SHARED
+		);
+		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton);
+	}
+
+	FreeLibrary(hModule);
 }
