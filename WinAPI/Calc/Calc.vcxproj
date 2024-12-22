@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClInclude Include="Colors.h" />
     <ClInclude Include="Dimensions.h" />
+    <ClInclude Include="Fonts.h" />
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
