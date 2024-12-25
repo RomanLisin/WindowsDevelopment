@@ -77,6 +77,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	
 	static INT index = 0;
+	static INT indexFont = 0;
 	static HMODULE hFontsModule = NULL;
 	static CHAR* g_FONT_NAME[256];
 	switch (uMsg)
@@ -464,6 +465,8 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		CheckMenuItem(hMenuSkins, index, MF_BYPOSITION | MF_CHECKED);
 
+		CheckMenuItem(hMenuFonts, indexFont, MF_BYPOSITION | MF_CHECKED);
+
 		//3) использование контекстного меню
 		DWORD item = TrackPopupMenu(hMenu, TPM_RETURNCMD /*будет возвращать id ресурса выбранного пункта*/ | TPM_RIGHTALIGN | TPM_BOTTOMALIGN, LOWORD(lParam), HIWORD(lParam), 0, hwnd, NULL);// -IDR_METAL_MISTRAL;
 		switch (item)
@@ -474,8 +477,12 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			//SendMessage(GetDlgItem(hwnd, item), )
 			//ModifyMenu(hMenu, item - IDR_SQUARE_BLUE, MF_BYPOSITION | MF_CHECKED | MF_STRING, item, NULL);
 			break;
+		case IDR_DIGITAL_7:
+		case IDR_TERMINATOR:
+		case IDR_MOSCOW_2024:
+			indexFont = item - IDR_DIGITAL_7;
+			break;
 		case IDR_EXIT:			SendMessage(hwnd, WM_CLOSE, 0, 0); break;
-
 		}
 		HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
 		HDC hdcDisplay = GetDC(hEditDisplay);
