@@ -116,7 +116,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CLIP_CHARACTER_PRECIS,
 			ANTIALIASED_QUALITY,
 			FF_DONTCARE,
-			g_FONT_NAMES[3]  // нужно прописывать имя шрифта, а не файла
+			g_FONT_NAMES[2]  // нужно прописывать имя шрифта, а не файла
 		);
 		SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);  // (LPARAM)hFontsModule, TRUE);
 
@@ -489,6 +489,22 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SendMessage(hwnd, WM_CTLCOLOREDIT, (WPARAM)hdcDisplay, 0);
 		ReleaseDC(hEditDisplay, hdcDisplay);
 		SetSkinFromDLL(hwnd, g_SKIN[index]);
+		int iFont = indexFont + 2001;
+		LoadFontFromDLL(hFontsModule, iFont);
+		//LoadFontFromDLL(hFontsModule);  // загружает шрифты из библиотеки Fonts.dll
+		HFONT hFont = CreateFont
+		(
+			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
+			0, 0,
+			FW_MEDIUM, 0, 0, 0,
+			ANSI_CHARSET,
+			OUT_CHARACTER_PRECIS,
+			CLIP_CHARACTER_PRECIS,
+			ANTIALIASED_QUALITY,
+			FF_DONTCARE,
+			g_FONT_NAMES[indexFont]  // нужно прописывать имя шрифта, а не файла
+		);
+		SendMessage(hEditDisplay, WM_SETFONT, (WPARAM)hFont, TRUE);  // (LPARAM)hFontsModule, TRUE);
 		SetFocus(hEditDisplay);
 		//4) удаляем меню
 		DestroyMenu(hMenu);
