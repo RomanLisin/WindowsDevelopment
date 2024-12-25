@@ -1,11 +1,10 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS  // добавляем при ошибке С4996
 #include<Windows.h>
-#include"Resource.h"
+#include"resource.h"
 #include"Dimensions.h"
-#include<float.h>
+#include<Float.h>
 #include<cstdio>
-#include"Colors.h"
-//#include"Skin.h"
+#include"Skins.h"
 #include"Fonts.h"
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc_VPD_311";
@@ -88,7 +87,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		(
 			NULL, "Edit", "0",
 			WS_CHILD | WS_VISIBLE | WS_BORDER | ES_RIGHT,
-			10, 10,
+			g_i_START_X, g_i_START_Y,
 			g_i_SCREEN_WIDTH, g_i_SCREEN_HEIGHT,
 			hwnd,
 			(HMENU)999,
@@ -96,7 +95,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 
-		hFontsModule = LoadLibrary("Fonts.dll");
+		hFontsModule = LoadLibrary("Fonts.dll");  // загружает DLL-файл в память 
 		//HRSRC hFntRes = FindResource(hFontsModule, MAKEINTRESOURCE(2003), MAKEINTRESOURCE(RT_FONT));
 		//HGLOBAL hFntMem = LoadResource(hFontsModule, hFntRes); // загружаем Font прям в оперативную память
 		//VOID* fntData = LockResource(hFntMem);// далее его нужно заблокировать
@@ -105,7 +104,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//AddFontMemResourceEx(fntData, len, NULL, &nFonts);
 
 		//AddFontResource("Fonts\\light-led-display-7.ttf");
-		LoadFontFromDLL(hFontsModule);
+		LoadFontFromDLL(hFontsModule);  // загружает шрифты из библиотеки Fonts.dll
 		HFONT hFont = CreateFont
 		(
 			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
@@ -116,9 +115,9 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CLIP_CHARACTER_PRECIS,
 			ANTIALIASED_QUALITY,
 			FF_DONTCARE,
-			g_FONT_NAME[2]  // нужно прописывать имя шрифта, а не файла
+			g_FONT_NAMES[3]  // нужно прописывать имя шрифта, а не файла
 		);
-		SendMessage(hEdit, WM_SETFONT, (LPARAM)hFontsModule, TRUE);
+		SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);  // (LPARAM)hFontsModule, TRUE);
 
 		CHAR sz_digit[2] = {};
 		for (int i = 6; i >= 0; i -= 3)  //отвечает за ряды кнопок сверху вниз ,  i равнo : 6, 3, 0. Это три ряда(3 строки).
@@ -224,7 +223,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 		//SetSkin(hwnd, "square_blue");  // устанавливает в каждую кнопку соответствующую иконку
-		SetSkinFromDLL(hwnd, "square_blue.dll");  // устанавливает в каждую кнопку соответствующую иконку
+		SetSkinFromDLL(hwnd, "square_blue.dll");  //загружает изображения кнопок из библиотеки square_blue.dll, устанавливает в каждую кнопку соответствующую иконку
 
 	}
 	break;
@@ -449,14 +448,17 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		HMENU hMenuSkins = CreatePopupMenu();
 		HMENU hMenuFonts = CreatePopupMenu();
 		//2) добавляем пункты в созданное меню
-		InsertMenu(hMenu, 0 /*stack principle*/, MF_BYPOSITION | MF_STRING, IDR_EXIT, "Exit");
-		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
-		InsertMenu(hMenuFonts, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_MOSCOW_2024, "Digital-7");
+		
+		InsertMenu(hMenuFonts, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_MOSCOW_2024, "MOSCOW2024");
 		InsertMenu(hMenuFonts, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_TERMINATOR, "Terminator Two");
-		InsertMenu(hMenuFonts, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_DIGITAL_7, "Moscow 2024");
+		InsertMenu(hMenuFonts, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_DIGITAL_7, "Digital-7");
 
 		InsertMenu(hMenuSkins, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_METAL_MISTRAL, "Metal mistral");
 		InsertMenu(hMenuSkins, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_SQUARE_BLUE, "Square blue");
+
+		InsertMenu(hMenu, 0 /*stack principle*/, MF_BYPOSITION | MF_STRING, IDR_EXIT, "Exit");
+		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
+
 		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hMenuFonts, "Fonts");
 		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hMenuSkins, "Skins");
 
