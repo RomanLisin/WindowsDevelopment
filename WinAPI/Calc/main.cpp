@@ -454,6 +454,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		InsertMenu(hMenuFonts, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_TERMINATOR, "Terminator Two");
 		InsertMenu(hMenuFonts, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_DIGITAL_7, "Digital-7");
 
+		InsertMenu(hMenuSkins, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_YOHO_SOLID, "Yoho solid");
 		InsertMenu(hMenuSkins, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_METAL_MISTRAL, "Metal mistral");
 		InsertMenu(hMenuSkins, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_SQUARE_BLUE, "Square blue");
 
@@ -473,6 +474,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 		case IDR_SQUARE_BLUE:	//SetSkin(hwnd, "square_blue"); break;
 		case IDR_METAL_MISTRAL: //SetSkin(hwnd, "metal_mistral"); break;
+		case IDR_YOHO_SOLID:
 			index = item - IDR_SQUARE_BLUE;
 			//SendMessage(GetDlgItem(hwnd, item), )
 			//ModifyMenu(hMenu, item - IDR_SQUARE_BLUE, MF_BYPOSITION | MF_CHECKED | MF_STRING, item, NULL);
@@ -605,7 +607,7 @@ VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID)
 }
 VOID LoadFontFromDLL(HMODULE hFontsModule)
 {
-	for (int i = 2001; i <= 2003; i++)
+	for (int i = 2001; i <= 2004; i++)
 	{
 		LoadFontFromDLL(hFontsModule, i); // таким образом загружаем все шрифты из DLL в память
 	}

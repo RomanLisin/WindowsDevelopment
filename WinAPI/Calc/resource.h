@@ -9,6 +9,7 @@
 #define IDR_SKINS			200
 #define IDR_SQUARE_BLUE		201
 #define IDR_METAL_MISTRAL	202
+#define	IDR_YOHO_SOLID		203
 
 #define IDR_FONTS			250
 #define IDR_DIGITAL_7		251
