@@ -18,6 +18,7 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
 VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[]);
 VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID);
 VOID LoadFontFromDLL(HMODULE hFontsModule);
+VOID DrawCenterText(HWND hwnd, const CHAR* text);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -491,7 +492,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		SendMessage(hwnd, WM_CTLCOLOREDIT, (WPARAM)hdcDisplay, 0);
 		ReleaseDC(hEditDisplay, hdcDisplay);
 		SetSkinFromDLL(hwnd, g_SKIN[index]);
-		int iFont = indexFont + 2001;
+		int iFont = indexFont + 2001;  //IDF_FONT_1  -  2001
 		LoadFontFromDLL(hFontsModule, iFont);
 		//LoadFontFromDLL(hFontsModule);  // загружает шрифты из библиотеки Fonts.dll
 		HFONT hFont = CreateFont
@@ -507,10 +508,57 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			g_FONT_NAMES[indexFont]  // нужно прописывать имя шрифта, а не файла
 		);
 		SendMessage(hEditDisplay, WM_SETFONT, (WPARAM)hFont, TRUE);  // (LPARAM)hFontsModule, TRUE);
+		if (item == IDR_YOHO_SOLID) // MessageBox(hwnd, "Всё хорошо", "ok", MB_OK );
+		{
+			CHAR sz_buff[2]{};
+			for (int i = IDC_BUTTON_0; i <= IDC_BUTTON_EQUAL; i++)
+			{
+				HWND wndButton = GetDlgItem(hwnd, i);
+				SendMessage(wndButton, WM_GETTEXT, (WPARAM)sizeof(sz_buff), (LPARAM)sz_buff);
+				SendMessage(wndButton, WM_SETFONT, (WPARAM)hFont, TRUE);
+				//DrawCenterText(wndButton, sz_buff);
+				////SendMessage(wndButton, WM_SETTEXT, 0, (LPARAM)sz_buff);
+				InvalidateRect;
+				//UpdateWindow(wndButton);
+				//RedrawWindow(wndButton, NULL, NULL, RDW_ERASE);
+				//SendMessage(wndButton, WM_ERASEBKGND, wParam /*(WPARAM)hdcEdit*/, 0);
+			}
+
 		SetFocus(hEditDisplay);
+		}
 		//4) удаляем меню
+		DestroyMenu(hMenuSkins);
+		DestroyMenu(hMenuFonts);
 		DestroyMenu(hMenu);
 	}
+		break;
+	case WM_DRAWITEM:
+	{
+		LPDRAWITEMSTRUCT pDrawItem = (LPDRAWITEMSTRUCT)lParam;
+		if (pDrawItem->CtlID == IDC_BUTTON_1) // Проверяем ID кнопки
+		{
+			// Отрисовка изображения
+			HBITMAP hBitmap = (HBITMAP)LoadImage(NULL, "button_7.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+			HDC hdcMem = CreateCompatibleDC(pDrawItem->hDC);
+			SelectObject(hdcMem, hBitmap);
+			BitBlt(pDrawItem->hDC, 0, 0, pDrawItem->rcItem.right, pDrawItem->rcItem.bottom, hdcMem, 0, 0, SRCCOPY);
+			DeleteDC(hdcMem);
+
+			// Отрисовка текста
+			SetBkMode(pDrawItem->hDC, TRANSPARENT);
+			SetTextColor(pDrawItem->hDC, RGB(255, 255, 255)); // Цвет текста
+			DrawText(pDrawItem->hDC, "Text", -1, &pDrawItem->rcItem, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+		}
+		return TRUE;
+	}
+	//case WM_PAINT:
+	//{
+	//	HWND hwndCaller = (HWND)wParam; // получаем вызывающее окно
+	//	PAINTSTRUCT ps;
+	//	HDC hdc = BeginPaint(hwndCaller ? hwndCaller : hwnd, &ps);
+	//	DrawCenterText(hwndCaller ? hwndCaller : hwnd, hdc);
+	//	EndPaint(hwndCaller ? hwndCaller : hwnd, &ps);
+	//}
 		break;
 	case WM_DESTROY:
 		FreeLibrary(hFontsModule);
@@ -611,4 +659,22 @@ VOID LoadFontFromDLL(HMODULE hFontsModule)
 	{
 		LoadFontFromDLL(hFontsModule, i); // таким образом загружаем все шрифты из DLL в память
 	}
+}
+VOID DrawCenterText(HWND hwnd, const CHAR* text) //HDC hdc)
+{
+	//CHAR sz_text[MAX_PATH] = { 0 };
+	//SendMessage(hwnd, WM_GETTEXT, (WPARAM)sizeof(sz_text) / sizeof(CHAR), (LPARAM)sz_text);
+
+	HDC hdc = GetDC(hwnd);
+	RECT rect;
+	GetClientRect(hwnd, &rect);
+	SetTextAlign(hdc, TA_CENTER | TA_BASELINE); // центрирование текста
+	SetBkMode(hdc, TRANSPARENT);  // прозрачный фон
+	// координаты для вывода текста (по центру окна)
+	int x = (rect.right - rect.left) / 2;
+	int y = (rect.right - rect.left) / 2;
+
+	TextOut(hdc, x, y, text, lstrlen(text));
+
+	ReleaseDC(hwnd, hdc); // освобождаем контекст устройства
 }

@@ -1,6 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Calc|Win32">
+      <Configuration>Calc</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Calc|x64">
+      <Configuration>Calc</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
       <Platform>Win32</Platform>
@@ -51,6 +59,12 @@
     <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Calc|Win32'">
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Calc|x64'">
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -141,24 +155,24 @@
     <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="ButtonsBMP\square_blue\button_0.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_1.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_2.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_3.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_4.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_5.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_6.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_7.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_8.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_9.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_aster.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_bsp.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_clr.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_equal.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_minus.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_plus.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_point.bmp" />
-    <Image Include="ButtonsBMP\square_blue\button_slash.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_0.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_1.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_2.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_3.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_4.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_5.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_6.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_7.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_8.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_9.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_aster.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_bsp.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_clr.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_equal.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_minus.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_plus.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_point.bmp" />
+    <Image Include="ButtonsBMP\yoho_solid\button_slash.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

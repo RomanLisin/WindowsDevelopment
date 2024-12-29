@@ -25,58 +25,58 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="ButtonsBMP\square_blue\button_0.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_0.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_1.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_1.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_2.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_2.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_3.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_3.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_4.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_4.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_5.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_5.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_6.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_6.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_7.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_7.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_8.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_8.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_9.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_9.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_aster.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_aster.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_bsp.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_bsp.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_clr.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_clr.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_equal.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_equal.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_minus.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_minus.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_plus.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_plus.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_point.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_point.bmp">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="ButtonsBMP\square_blue\button_slash.bmp">
+    <Image Include="ButtonsBMP\yoho_solid\button_slash.bmp">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
