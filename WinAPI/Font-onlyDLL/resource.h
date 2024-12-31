@@ -3,9 +3,9 @@
 // Used by Resource.rc
 
 
-#define IDF_FONT_1			2001
-#define IDF_FONT_2			2002
-#define IDF_FONT_3			2003
+#define IDF_FONT_1			251
+#define IDF_FONT_2			252
+#define IDF_FONT_3			253
 
 
 // Next default values for new objects

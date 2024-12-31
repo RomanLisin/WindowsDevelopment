@@ -18,6 +18,7 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
 VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[]);
 VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID);
 VOID LoadFontFromDLL(HMODULE hFontsModule);
+VOID SetFont(HWND hwnd, CONST CHAR font_name[]);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -77,6 +78,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	
 	static INT index = 0;
+	static INT font_index = 0;
 	static HMODULE hFontsModule = NULL;
 	static CHAR* g_FONT_NAME[256];
 	switch (uMsg)
@@ -105,19 +107,20 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		//AddFontResource("Fonts\\light-led-display-7.ttf");
 		LoadFontFromDLL(hFontsModule);  // загружает шрифты из библиотеки Fonts.dll
-		HFONT hFont = CreateFont
-		(
-			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
-			0, 0,
-			FW_MEDIUM, 0, 0, 0,
-			ANSI_CHARSET,
-			OUT_CHARACTER_PRECIS,
-			CLIP_CHARACTER_PRECIS,
-			ANTIALIASED_QUALITY,
-			FF_DONTCARE,
-			g_FONT_NAMES[3]  // нужно прописывать имя шрифта, а не файла
-		);
-		SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);  // (LPARAM)hFontsModule, TRUE);
+		//HFONT hFont = CreateFont
+		//(
+		//	g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
+		//	0, 0,
+		//	FW_MEDIUM, 0, 0, 0,
+		//	ANSI_CHARSET,
+		//	OUT_CHARACTER_PRECIS,
+		//	CLIP_CHARACTER_PRECIS,
+		//	ANTIALIASED_QUALITY,
+		//	FF_DONTCARE,
+		//	g_FONT_NAMES[3]  // нужно прописывать имя шрифта, а не файла
+		//);
+		//SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);  // (LPARAM)hFontsModule, TRUE);
+		SetFont(hwnd, g_FONT_NAMES[index]);
 
 		CHAR sz_digit[2] = {};
 		for (int i = 6; i >= 0; i -= 3)  //отвечает за ряды кнопок сверху вниз ,  i равнo : 6, 3, 0. Это три ряда(3 строки).
@@ -463,16 +466,24 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		InsertMenu(hMenu, 0, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hMenuSkins, "Skins");
 
 		CheckMenuItem(hMenuSkins, index, MF_BYPOSITION | MF_CHECKED);
+		CheckMenuItem(hMenuFonts, font_index, MF_BYPOSITION | MF_CHECKED);
 
 		//3) использование контекстного меню
 		DWORD item = TrackPopupMenu(hMenu, TPM_RETURNCMD /*будет возвращать id ресурса выбранного пункта*/ | TPM_RIGHTALIGN | TPM_BOTTOMALIGN, LOWORD(lParam), HIWORD(lParam), 0, hwnd, NULL);// -IDR_METAL_MISTRAL;
 		switch (item)
 		{
+			// Skins:
 		case IDR_SQUARE_BLUE:	//SetSkin(hwnd, "square_blue"); break;
 		case IDR_METAL_MISTRAL: //SetSkin(hwnd, "metal_mistral"); break;
 			index = item - IDR_SQUARE_BLUE;
 			//SendMessage(GetDlgItem(hwnd, item), )
 			//ModifyMenu(hMenu, item - IDR_SQUARE_BLUE, MF_BYPOSITION | MF_CHECKED | MF_STRING, item, NULL);
+			break;
+			// Fonts:
+		case IDR_DIGITAL_7:		
+		case IDR_TERMINATOR:
+		case IDR_MOSCOW_2024:
+			font_index = item - IDR_FONTS - 1;
 			break;
 		case IDR_EXIT:			SendMessage(hwnd, WM_CLOSE, 0, 0); break;
 
@@ -483,7 +494,10 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		ReleaseDC(hEditDisplay, hdcDisplay);
 		SetSkinFromDLL(hwnd, g_SKIN[index]);
 		SetFocus(hEditDisplay);
+		SetFont(hwnd, g_FONT_NAMES[font_index]);
 		//4) удаляем меню
+		DestroyMenu(hMenuSkins);
+		DestroyMenu(hMenuFonts);
 		DestroyMenu(hMenu);
 	}
 		break;
@@ -492,6 +506,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		PostQuitMessage(0);
 		break;
 	case WM_CLOSE:
+
 		DestroyWindow(hwnd);
 		break;
 	default: return DefWindowProc(hwnd, uMsg, wParam, lParam);
@@ -582,8 +597,26 @@ VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID)
 }
 VOID LoadFontFromDLL(HMODULE hFontsModule)
 {
-	for (int i = 2001; i <= 2003; i++)
+	for (int i = 251; i <= 253; i++)
 	{
 		LoadFontFromDLL(hFontsModule, i); // таким образом загружаем все шрифты из DLL в память
 	}
+}
+
+VOID SetFont(HWND hwnd, CONST CHAR font_name[])
+{
+	HWND hEdit = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+	HFONT hFont = CreateFont
+	(
+		g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
+		0, 0,
+		FW_MEDIUM, 0, 0, 0,
+		ANSI_CHARSET,
+		OUT_CHARACTER_PRECIS,
+		CLIP_CHARACTER_PRECIS,
+		ANTIALIASED_QUALITY,
+		FF_DONTCARE,
+		font_name // нужно прописывать имя шрифта, а не файла
+	);
+	SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
 }

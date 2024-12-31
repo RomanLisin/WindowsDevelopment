@@ -4,6 +4,6 @@
 CONST CHAR* g_FONT_NAMES[] =
 {
 	"Digital-7",
-   "MOSCOW2024",
-	"Terminator Two"
+	"Terminator Two",
+	"MOSCOW2024"
 };
