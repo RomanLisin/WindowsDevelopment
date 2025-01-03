@@ -19,6 +19,10 @@ VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[]);
 VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID);
 VOID LoadFontFromDLL(HMODULE hFontsModule);
 VOID SetFont(HWND hwnd, CONST CHAR font_name[]);
+VOID SaveStateSkin(int selectedItem);
+INT LoadStateSkin();
+VOID SaveStateFont(int selectedItem);
+INT LoadStateFont();
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -85,6 +89,10 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 	{
+		
+		if (GetFileAttributes("stateSkin.bin") != INVALID_FILE_ATTRIBUTES)index = LoadStateSkin();
+		if (GetFileAttributes("stateFont.bin") != INVALID_FILE_ATTRIBUTES)font_index= LoadStateFont();
+		
 		HWND hEdit = CreateWindowEx
 		(
 			NULL, "Edit", "0",
@@ -120,7 +128,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		//	g_FONT_NAMES[3]  // нужно прописывать имя шрифта, а не файла
 		//);
 		//SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);  // (LPARAM)hFontsModule, TRUE);
-		SetFont(hwnd, g_FONT_NAMES[index]);
+		SetFont(hwnd, g_FONT_NAMES[font_index]);
 
 		CHAR sz_digit[2] = {};
 		for (int i = 6; i >= 0; i -= 3)  //отвечает за ряды кнопок сверху вниз ,  i равнo : 6, 3, 0. Это три ряда(3 строки).
@@ -226,7 +234,9 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 		//SetSkin(hwnd, "square_blue");  // устанавливает в каждую кнопку соответствующую иконку
-		SetSkinFromDLL(hwnd, "square_blue.dll");  //загружает изображения кнопок из библиотеки square_blue.dll, устанавливает в каждую кнопку соответствующую иконку
+		CHAR sz_filename[MAX_PATH]{};
+		sprintf(sz_filename, "%s.dll", g_SKIN[index]);
+		SetSkinFromDLL(hwnd, sz_filename); // "square_blue.dll");  //загружает изображения кнопок из библиотеки square_blue.dll, устанавливает в каждую кнопку соответствующую иконку
 
 	}
 	break;
@@ -467,7 +477,6 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		CheckMenuItem(hMenuSkins, index, MF_BYPOSITION | MF_CHECKED);
 		CheckMenuItem(hMenuFonts, font_index, MF_BYPOSITION | MF_CHECKED);
-
 		//3) использование контекстного меню
 		DWORD item = TrackPopupMenu(hMenu, TPM_RETURNCMD /*будет возвращать id ресурса выбранного пункта*/ | TPM_RIGHTALIGN | TPM_BOTTOMALIGN, LOWORD(lParam), HIWORD(lParam), 0, hwnd, NULL);// -IDR_METAL_MISTRAL;
 		switch (item)
@@ -475,15 +484,21 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			// Skins:
 		case IDR_SQUARE_BLUE:	//SetSkin(hwnd, "square_blue"); break;
 		case IDR_METAL_MISTRAL: //SetSkin(hwnd, "metal_mistral"); break;
+		{
 			index = item - IDR_SQUARE_BLUE;
+			SaveStateSkin(index);
 			//SendMessage(GetDlgItem(hwnd, item), )
 			//ModifyMenu(hMenu, item - IDR_SQUARE_BLUE, MF_BYPOSITION | MF_CHECKED | MF_STRING, item, NULL);
 			break;
+		}
 			// Fonts:
 		case IDR_DIGITAL_7:		
 		case IDR_TERMINATOR:
 		case IDR_MOSCOW_2024:
+		{
 			font_index = item - IDR_FONTS - 1;
+			SaveStateFont(font_index);
+		}
 			break;
 		case IDR_EXIT:			SendMessage(hwnd, WM_CLOSE, 0, 0); break;
 
@@ -619,4 +634,46 @@ VOID SetFont(HWND hwnd, CONST CHAR font_name[])
 		font_name // нужно прописывать имя шрифта, а не файла
 	);
 	SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
+}
+VOID SaveStateSkin(int selectedItem)
+{
+	FILE* file =  fopen("stateSkin.bin","wb");
+	if (file)
+	{
+		fwrite(&selectedItem, sizeof(selectedItem), 1, file);
+		fclose(file);
+	}
+}
+INT LoadStateSkin()
+{
+	int selectedItem = 0;
+	FILE* file =  fopen("stateSkin.bin", "rb");
+
+	if (file)
+	{
+		fread(&selectedItem, sizeof(selectedItem), 1, file);
+		fclose(file);
+	}
+	return selectedItem;
+}
+VOID SaveStateFont(int selectedItem)
+{
+	FILE* file =  fopen("stateFont.bin","wb");
+	if (file)
+	{
+		fwrite(&selectedItem, sizeof(selectedItem), 1, file);
+		fclose(file);
+	}
+}
+INT LoadStateFont()
+{
+	int selectedItem = 0;
+	FILE* file =  fopen("stateFont.bin", "rb");
+
+	if (file)
+	{
+		fread(&selectedItem, sizeof(selectedItem), 1, file);
+		fclose(file);
+	}
+	return selectedItem;
 }
