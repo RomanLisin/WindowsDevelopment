@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace Clock
 {
-	public partial class MainForm : Form
+	public partial class mainForm : Form
 	{
-		public MainForm()
+		public mainForm()
 		{
 			InitializeComponent();
 			labelTime.BackColor = Color.AliceBlue;  // чтобы при изменении прозрачности lableTime отображалось лучше
@@ -45,6 +45,8 @@ namespace Clock
 			{
 				labelTime.Text += $"\n{DateTime.Now.DayOfWeek}";
 			}
+			notifyIcon.Text = $"{DateTime.Now.ToString("hh:mm tt")}\n{DateTime.Now.ToString("yyyy.MM.dd")}\n{DateTime.Now.DayOfWeek}";//DateTime.Now.ToString("hh:mm tt"); //labelTime.Text;  // чтобы при наведении курсора  в system tray в подсказке  отображалось время
+
 		}
 
 		private void buttonHideControls_Click(object sender, EventArgs e)
@@ -56,5 +58,7 @@ namespace Clock
 		{
 			SetVisibility(true);
 		}
+
+	
 	}
 }
