@@ -46,6 +46,7 @@
 			this.labelTime.Size = new System.Drawing.Size(118, 51);
 			this.labelTime.TabIndex = 0;
 			this.labelTime.Text = "Time";
+			this.labelTime.DoubleClick += new System.EventHandler(this.labelTime_DoubleClick);
 			// 
 			// timer
 			// 
@@ -96,6 +97,7 @@
 			this.Controls.Add(this.labelTime);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "MainForm";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.Text = "Clock VPD_311";
 			this.ResumeLayout(false);
 			this.PerformLayout();

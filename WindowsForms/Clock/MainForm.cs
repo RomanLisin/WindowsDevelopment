@@ -15,8 +15,20 @@ namespace Clock
 		public MainForm()
 		{
 			InitializeComponent();
-		}
+			labelTime.BackColor = Color.AliceBlue;  // чтобы при изменении прозрачности lableTime отображалось лучше
+			this.Location = new Point(Screen.PrimaryScreen.Bounds.Width - this.Width, 50);  // чтобы форма запускалась вправом верхнем углу, при этом Properties -> StartPosition -> Manual
 
+		}
+		
+		 void SetVisibility(bool visible)
+		{
+			checkBoxShowDate.Visible = visible;
+			checkBoxShowWeekDay.Visible = visible;
+			buttonHideControls.Visible = visible;
+			this.FormBorderStyle = visible?	FormBorderStyle.FixedDialog:FormBorderStyle.None;
+			this.ShowInTaskbar = visible;
+			this.TransparencyKey = visible?Color.Empty:this.BackColor; // второй делает прозрачным
+		}
 		private void timer_Tick(object sender, EventArgs e)
 		{
 			// обработчик события - это самая обычная функция, которая неявно вызывается при возникновении определенного события
@@ -37,7 +49,12 @@ namespace Clock
 
 		private void buttonHideControls_Click(object sender, EventArgs e)
 		{
+			SetVisibility(false);
+		}
 
+		private void labelTime_DoubleClick(object sender, EventArgs e)
+		{
+			SetVisibility(true);
 		}
 	}
 }
