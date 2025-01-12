@@ -59,6 +59,14 @@ namespace Clock
 			SetVisibility(true);
 		}
 
-	
+		private void toolStripMenuItemBackgroundColor_Click(object sender, EventArgs e)
+		{
+			this.BackColor = labelTime.BackColor = buttonHideControls.BackColor = toolStripMenuItemBackgroundColor.Checked ? Color.DarkGreen: DefaultBackColor;
+		}
+
+		private void toolStripMenuItemForegroundColor_Click(object sender, EventArgs e)
+		{
+			this.ForeColor = toolStripMenuItemForegroundColor.Checked ? Color.Silver : DefaultForeColor;
+		}
 	}
 }
