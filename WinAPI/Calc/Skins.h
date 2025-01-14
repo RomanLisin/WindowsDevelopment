@@ -1,0 +1,7 @@
+#pragma once
+#include<Windows.h>
+
+CONST CHAR* g_SKIN[] = { "square_blue","metal_mistral" };
+CONST COLORREF g_WINDOW_BACKGROUND_COLLOR[] =  { RGB(0,0,255),	RGB(150,150,150) };
+CONST COLORREF g_DISPLAY_BACKGROUND_COLLOR[] = { RGB(0,0,100),	RGB(75,75,75) };
+CONST COLORREF g_DISPLAY_FOREGROUND_COLLOR[] = { RGB(255,0,0),	RGB(0,255,0) };
